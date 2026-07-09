@@ -175,15 +175,28 @@ export function render(v) {
             <div style={{ padding: '16px 16px 0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 {v.phasePills.map((p, i) => (
-                  <div key={i} onClick={p.pick} style={{ minHeight: '52px', borderRadius: '12px', background: p.bg, border: '1px solid ' + p.border, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '8px 12px', cursor: 'pointer' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: p.numColor }}>Phase {p.num}</div>
+                  <div key={i} onClick={p.pick} style={{ minHeight: '52px', borderRadius: '12px', background: p.bg, border: '1px solid ' + p.border, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '8px 12px', cursor: 'pointer', position: 'relative' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: p.numColor }}>Phase {p.num}{p.isActive ? ' ·' : ''}</div>
                     <div style={{ fontSize: '13px', fontWeight: 600, color: p.color, marginTop: '2px' }}>{p.label}</div>
+                    {p.isActive && (
+                      <span style={{ position: 'absolute', top: '7px', right: '9px', fontSize: '8px', fontWeight: 700, letterSpacing: '.5px', textTransform: 'uppercase', color: '#43e08a' }}>Tu es ici</span>
+                    )}
                   </div>
                 ))}
               </div>
+              <div style={{ fontSize: '11px', color: 'rgba(238,240,234,.4)', padding: '0 4px', lineHeight: 1.4 }}>Touche une phase pour voir son contenu. Le changement de phase se fait via la progression ci-dessous.</div>
               <div style={{ fontSize: '13px', color: 'rgba(238,240,234,.55)', lineHeight: 1.5, padding: '0 4px' }}>{v.phaseGoal}</div>
 
+              {/* Bandeau : on consulte une phase autre que la sienne */}
+              {v.viewingOther && (
+                <div onClick={v.backToMyPhase} style={{ background: 'rgba(238,240,234,.05)', border: '1px dashed rgba(238,240,234,.25)', borderRadius: '12px', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                  <span style={{ fontSize: '15px' }}>👁️</span>
+                  <div style={{ flex: 1, fontSize: '12.5px', color: 'rgba(238,240,234,.7)', lineHeight: 1.4 }}>Aperçu de « {v.viewPhaseLabel} ». Tu n'y es pas encore — <strong>touche ici</strong> pour revenir à ta phase.</div>
+                </div>
+              )}
+
               {/* ===== Progression vers la phase suivante (NOUVEAU) ===== */}
+              {!v.viewingOther && (
               <div style={{ background: v.prog.ready ? 'rgba(67,224,138,.1)' : '#181c19', border: '1px solid ' + (v.prog.ready ? 'rgba(67,224,138,.45)' : '#232823'), borderRadius: '16px', padding: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={v.prog.ready ? '#43e08a' : 'rgba(238,240,234,.5)'} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M3 17l6-6 4 4 8-8"></path></svg>
@@ -206,11 +219,26 @@ export function render(v) {
                 {v.prog.ready && (
                   <button onClick={v.advancePhase} style={{ width: '100%', marginTop: '12px', background: '#43e08a', color: '#0f1210', border: 'none', borderRadius: '12px', padding: '13px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Passer à « {v.prog.nextLabel} » →</button>
                 )}
+
+                {/* Recul suggéré : douleur trop haute (règle 🔴) */}
+                {v.suggestBack && (
+                  <div style={{ marginTop: '12px', padding: '12px 14px', background: 'rgba(224,101,74,.1)', border: '1px solid rgba(224,101,74,.35)', borderRadius: '12px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: '#e0654a', lineHeight: 1.45 }}>🔴 On recule d'un cran ?</div>
+                    <div style={{ fontSize: '12.5px', color: 'rgba(238,240,234,.7)', lineHeight: 1.45, marginTop: '4px' }}>{v.backReason} Revenir en « {v.prevPhaseLabel} » quelques jours laisse le tendon se calmer, puis tu re-progresseras.</div>
+                    <button onClick={v.goBackPhase} style={{ width: '100%', marginTop: '10px', background: '#e0654a', color: '#0f1210', border: 'none', borderRadius: '10px', padding: '11px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>← Revenir en « {v.prevPhaseLabel} »</button>
+                  </div>
+                )}
+
+                {/* Recul manuel discret (toujours dispo si pas déjà en phase 1) */}
+                {v.canGoBack && !v.suggestBack && (
+                  <button onClick={v.goBackPhase} style={{ width: '100%', marginTop: '10px', background: 'transparent', color: 'rgba(238,240,234,.45)', border: '1px solid #232823', borderRadius: '10px', padding: '9px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>← Revenir en « {v.prevPhaseLabel} » (si trop dur)</button>
+                )}
               </div>
+              )}
 
               {/* ===== Semaine type de la phase ===== */}
               <div style={{ background: '#181c19', border: '1px solid #232823', borderRadius: '16px', padding: '16px' }}>
-                <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: '#43e08a', marginBottom: '10px' }}>Semaine type</div>
+                <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: '#43e08a', marginBottom: '10px' }}>Semaine type{v.viewingOther ? ' (aperçu)' : ''}</div>
                 {v.weekPlan.map((w, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '5px 8px', borderRadius: '8px', background: w.isToday ? 'rgba(67,224,138,.08)' : 'transparent', border: w.isToday ? '1px solid rgba(67,224,138,.25)' : '1px solid transparent' }}>
                     <div style={{ width: '32px', fontFamily: "'Barlow Condensed',sans-serif", fontSize: '13px', fontWeight: 700, color: w.isToday ? '#43e08a' : w.isRest ? 'rgba(238,240,234,.3)' : 'rgba(238,240,234,.6)', textTransform: 'uppercase' }}>{w.d}</div>

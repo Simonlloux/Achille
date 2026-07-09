@@ -419,20 +419,33 @@ export default class App extends React.Component {
     const hero =
       d.phase === 0 ? heroes[0] : d.phase === 1 ? heroes[1] : d.phase === 2 ? heroes[2] : heroes[3];
 
-    // programme
+    // programme — pastilles en CONSULTATION seule : elles ouvrent l'aperçu
+    // d'une phase (ses exercices) sans changer la phase réelle. Le changement
+    // de phase se fait uniquement par la progression (avancer) ou le recul.
+    const viewedPhase = S.viewPhase != null ? S.viewPhase : d.phase;
     const phasePills = this.PH.map((p, i) => {
-      const active = i === d.phase;
+      const active = i === d.phase; // phase RÉELLE (là où tu en es)
+      const viewing = i === viewedPhase; // phase affichée en aperçu
       return {
         num: String(i + 1),
         label: p.label + ' · ' + p.weeks,
-        bg: active ? 'rgba(67,224,138,.12)' : '#181c19',
-        border: active ? 'rgba(67,224,138,.4)' : '#232823',
-        color: active ? '#eef0ea' : 'rgba(238,240,234,.6)',
-        numColor: active ? '#43e08a' : 'rgba(238,240,234,.4)',
-        pick: () => this.setPhase(i),
+        bg: active ? 'rgba(67,224,138,.12)' : viewing ? '#20261f' : '#181c19',
+        border: active
+          ? 'rgba(67,224,138,.5)'
+          : viewing
+            ? 'rgba(238,240,234,.35)'
+            : '#232823',
+        color: active || viewing ? '#eef0ea' : 'rgba(238,240,234,.6)',
+        numColor: active ? '#43e08a' : viewing ? 'rgba(238,240,234,.7)' : 'rgba(238,240,234,.4)',
+        isActive: active,
+        pick: () => this.setState({ viewPhase: i, openEx: -1 }),
       };
     });
-    const exCards = phase.ex.map((ex, i) => ({
+    // Bandeau d'aperçu quand on consulte une autre phase que la sienne.
+    const viewingOther = viewedPhase !== d.phase;
+    const viewPhaseObj = this.PH[viewedPhase];
+    // Cartes d'exercices de la phase AFFICHÉE (aperçu), pas forcément la sienne.
+    const exCards = viewPhaseObj.ex.map((ex, i) => ({
       num: String(i + 1),
       name: ex.name,
       meta: ex.meta,
@@ -475,9 +488,36 @@ export default class App extends React.Component {
     const advancePhase = () => {
       if (d.phase < this.PH.length - 1) {
         this.setPhase(d.phase + 1);
+        this.setState({ viewPhase: null });
         this.showToast('Bravo — phase ' + (d.phase + 2) + ' débloquée ✓');
       }
     };
+    const goBackPhase = () => {
+      if (d.phase > 0) {
+        this.setPhase(d.phase - 1);
+        this.setState({ viewPhase: null });
+        this.showToast('Retour en phase ' + d.phase + ' — on stabilise.');
+      }
+    };
+
+    // ---- recul automatique proposé (règle 🔴 du feu tricolore) ----
+    // « douleur > 5 pendant l'effort, OU raideur matinale en forte hausse
+    //   → recule d'un cran ». On PROPOSE (pas de recul forcé), et seulement
+    //   si on n'est pas déjà en phase 1.
+    const wakeRising =
+      wakeLast7.length >= 2 &&
+      wakePrev7.length >= 2 &&
+      wakeLast7.reduce((s, x) => s + x, 0) / wakeLast7.length >
+        wakePrev7.reduce((s, x) => s + x, 0) / wakePrev7.length + 1.5;
+    const painTooHigh =
+      (exerciseAvgRecent !== null && exerciseAvgRecent > 5) ||
+      (pmToday !== null && pmToday > 5);
+    const suggestBack = d.phase > 0 && (painTooHigh || wakeRising);
+    let backReason = '';
+    if (suggestBack) {
+      if (painTooHigh) backReason = 'Ta douleur a dépassé 5/10 — le tendon dit stop.';
+      else backReason = 'Ta raideur matinale grimpe nettement sur la semaine.';
+    }
 
     // ---- renfo : niveau + progression + exos verrouillés ----
     const strengthLevel = d.strengthLevel || 0;
@@ -511,15 +551,17 @@ export default class App extends React.Component {
         };
       });
 
-    // ---- semaine type (affichage Programme) ----
+    // ---- semaine type (affichage Programme, phase consultée) ----
     const dayNames = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
     const todayIdx = new Date().getDay();
+    const viewSched = viewPhaseObj.schedule || {};
     const weekPlan = [1, 2, 3, 4, 5, 6, 0].map((i) => {
-      const p = phaseSched[i] || { title: 'Séance', tendon: true };
+      const p = viewSched[i] || { title: 'Séance', tendon: true };
       return {
         d: dayNames[i],
         title: p.title || 'Séance',
-        isToday: i === todayIdx,
+        // « aujourd'hui » n'est surligné que si on consulte sa propre phase.
+        isToday: i === todayIdx && !viewingOther,
         isRest: !!p.rest,
       };
     });
@@ -773,12 +815,23 @@ export default class App extends React.Component {
 
       // programme
       phasePills,
-      phaseGoal: phase.goal,
+      phaseGoal: viewPhaseObj.goal,
       exCards,
+      // aperçu d'une autre phase que la sienne
+      viewingOther,
+      viewPhaseLabel: viewPhaseObj.label,
+      backToMyPhase: () => this.setState({ viewPhase: null, openEx: -1 }),
 
       // progression de phase (NOUVEAU)
       prog,
       advancePhase,
+      // recul de phase
+      canGoBack: d.phase > 0,
+      goBackPhase,
+      suggestBack,
+      backReason,
+      currentPhaseLabel: phase.label,
+      prevPhaseLabel: d.phase > 0 ? this.PH[d.phase - 1].label : '',
 
       // renfo trail (NOUVEAU)
       ...strengthVals,
