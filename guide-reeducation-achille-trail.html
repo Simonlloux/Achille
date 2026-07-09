@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocole Achille — Rééducation &amp; renfo trail</title>
+<style>
+  :root{
+    --craie:#F7F5F0;
+    --blanc:#FFFFFF;
+    --encre:#20261F;
+    --sapin:#1E4234;
+    --mousse:#75855F;
+    --balise:#CE3B23;
+    --ambre:#C97F16;
+    --vert:#2E7D4F;
+    --ardoise:#3D5A66;
+    --schiste:#6B7066;
+    --ligne:#DAD6CB;
+    --display:'Avenir Next Condensed','Arial Narrow','Helvetica Neue',Arial,sans-serif;
+    --body:'Avenir Next','Segoe UI','Helvetica Neue',Arial,sans-serif;
+    --mono:'SF Mono','Cascadia Mono','Consolas',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--craie);color:var(--encre);font-family:var(--body);font-size:15px;line-height:1.55;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .page{max-width:860px;margin:0 auto;padding:40px 28px 64px;}
+
+  /* Balise GR (marque blanche/rouge) */
+  .blaze{display:inline-block;vertical-align:middle;}
+  .blaze i{display:block;width:36px;height:8px;}
+  .blaze i:first-child{background:var(--blanc);border:1px solid #C8C3B6;border-bottom:none;}
+  .blaze i:last-child{background:var(--balise);}
+
+  /* En-tête */
+  header{border-bottom:3px solid var(--sapin);padding-bottom:22px;margin-bottom:26px;}
+  .kicker{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:13px;color:var(--schiste);margin:14px 0 4px;}
+  h1{font-family:var(--display);font-weight:700;text-transform:uppercase;font-size:44px;line-height:1.02;letter-spacing:.01em;color:var(--sapin);}
+  .subtitle{margin-top:10px;font-size:15.5px;color:var(--encre);max-width:640px;}
+  .meta{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;}
+  .meta span{font-family:var(--mono);font-size:11.5px;background:var(--blanc);border:1px solid var(--ligne);padding:3px 9px;border-radius:3px;color:var(--schiste);}
+
+  h2{font-family:var(--display);font-weight:700;text-transform:uppercase;font-size:26px;letter-spacing:.02em;color:var(--sapin);margin:0 0 4px;}
+  h3{font-family:var(--display);font-weight:600;text-transform:uppercase;font-size:17px;letter-spacing:.05em;color:var(--encre);margin:22px 0 8px;}
+  section{margin:34px 0;}
+  p{margin:8px 0;}
+  .muted{color:var(--schiste);font-size:13.5px;}
+
+  /* Encadrés */
+  .box{background:var(--blanc);border:1px solid var(--ligne);border-left:4px solid var(--sapin);padding:16px 18px;border-radius:4px;margin:14px 0;}
+  .box.alert{border-left-color:var(--balise);}
+  .box.note{border-left-color:var(--ambre);}
+  .box h4{font-family:var(--display);text-transform:uppercase;font-size:14px;letter-spacing:.08em;margin-bottom:6px;}
+  .box ul{margin:6px 0 0 18px;}
+  .box li{margin:5px 0;}
+
+  /* Règles d'or */
+  .rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:12px;}
+  .rule{background:var(--blanc);border:1px solid var(--ligne);border-radius:4px;padding:14px 16px;}
+  .rule .num{font-family:var(--mono);font-size:11px;color:var(--balise);letter-spacing:.1em;}
+  .rule strong{display:block;margin:3px 0 4px;font-size:14.5px;}
+  .rule p{font-size:13.5px;color:#454A42;margin:0;}
+
+  /* Feu tricolore */
+  .lights{display:grid;gap:10px;margin-top:12px;}
+  .light{display:grid;grid-template-columns:14px 130px 1fr;gap:14px;align-items:start;background:var(--blanc);border:1px solid var(--ligne);border-radius:4px;padding:13px 16px;}
+  .light .dot{width:14px;height:14px;border-radius:50%;margin-top:3px;}
+  .light strong{font-family:var(--display);text-transform:uppercase;letter-spacing:.05em;font-size:14px;}
+  .light p{margin:0;font-size:14px;}
+  .light.g .dot{background:var(--vert);} .light.g strong{color:var(--vert);}
+  .light.a .dot{background:var(--ambre);} .light.a strong{color:var(--ambre);}
+  .light.r .dot{background:var(--balise);} .light.r strong{color:var(--balise);}
+
+  /* Vue d'ensemble des phases */
+  .overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px;}
+  .ph{background:var(--blanc);border:1px solid var(--ligne);border-top:5px solid var(--sapin);border-radius:4px;padding:14px 16px;}
+  .ph.p2{border-top-color:var(--mousse);}
+  .ph.p3{border-top-color:var(--ambre);}
+  .ph .weeks{font-family:var(--mono);font-size:11px;color:var(--schiste);letter-spacing:.08em;}
+  .ph strong{display:block;font-family:var(--display);text-transform:uppercase;font-size:17px;letter-spacing:.04em;margin:2px 0 5px;}
+  .ph p{font-size:13.5px;margin:0;color:#454A42;}
+
+  /* Phases */
+  .phase-head{margin-top:44px;padding-top:10px;}
+  .phase-head .kicker{margin-top:8px;}
+  .objectif{font-size:15px;max-width:680px;}
+
+  /* Semaine type — lignes jour */
+  .week{margin-top:14px;display:grid;gap:8px;}
+  .day{display:grid;grid-template-columns:74px 1fr;gap:14px;background:var(--blanc);border:1px solid var(--ligne);border-radius:4px;padding:12px 14px;}
+  .day-label{border-right:2px solid var(--ligne);padding-right:10px;}
+  .day-label .d{display:block;font-family:var(--display);font-weight:700;font-size:20px;color:var(--sapin);line-height:1;}
+  .day-label .wd{font-family:var(--mono);font-size:10.5px;color:var(--schiste);letter-spacing:.1em;text-transform:uppercase;}
+  .tags{margin-bottom:6px;}
+  .tag{display:inline-block;font-family:var(--display);text-transform:uppercase;letter-spacing:.07em;font-size:11.5px;padding:2px 8px;border-radius:3px;color:#fff;margin-right:6px;}
+  .tag.tendon{background:var(--sapin);}
+  .tag.renfo{background:var(--mousse);}
+  .tag.cardio{background:var(--ardoise);}
+  .tag.plio{background:var(--ambre);}
+  .tag.course{background:var(--balise);}
+  .tag.repos{background:transparent;color:var(--schiste);border:1px solid var(--schiste);}
+  .exos{list-style:none;}
+  .exos li{padding:3px 0;font-size:14px;border-bottom:1px dashed #ECE9E0;}
+  .exos li:last-child{border-bottom:none;}
+  .chip{font-family:var(--mono);font-size:12px;background:#EFEDE5;border:1px solid var(--ligne);border-radius:3px;padding:1px 6px;white-space:nowrap;}
+
+  /* Tableaux */
+  table{width:100%;border-collapse:collapse;background:var(--blanc);border:1px solid var(--ligne);border-radius:4px;overflow:hidden;margin-top:12px;font-size:14px;}
+  th{font-family:var(--display);text-transform:uppercase;letter-spacing:.06em;font-size:12.5px;text-align:left;background:var(--sapin);color:#fff;padding:9px 12px;}
+  td{padding:9px 12px;border-top:1px solid var(--ligne);vertical-align:top;}
+  td:first-child{font-family:var(--mono);font-size:12.5px;color:var(--sapin);white-space:nowrap;}
+
+  /* Fiches techniques */
+  .fiches{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;margin-top:12px;}
+  .fiche{background:var(--blanc);border:1px solid var(--ligne);border-radius:4px;padding:14px 16px;break-inside:avoid;}
+  .fiche h4{font-family:var(--display);text-transform:uppercase;font-size:15px;letter-spacing:.05em;color:var(--sapin);margin-bottom:6px;}
+  .fiche p{font-size:13.5px;margin:4px 0;}
+  .fiche .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--balise);text-transform:uppercase;}
+
+  footer{margin-top:48px;border-top:3px solid var(--sapin);padding-top:14px;font-size:13px;color:var(--schiste);}
+
+  @media (max-width:560px){
+    h1{font-size:34px;}
+    .day{grid-template-columns:58px 1fr;}
+  }
+  @media print{
+    body{background:#fff;font-size:12.5px;}
+    .page{padding:0;max-width:none;}
+    section{margin:22px 0;}
+    .phase-head{page-break-before:always;margin-top:0;}
+    .fiche,.day,.box{page-break-inside:avoid;}
+    a{color:inherit;text-decoration:none;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <span class="blaze"><i></i><i></i></span>
+  <p class="kicker">Simon · Reprise après abandon km 27 · Entraînement maison</p>
+  <h1>Protocole Achille<br>Rééducation &amp; renfo trail</h1>
+  <p class="subtitle">Tendinopathie du <strong>corps du tendon d'Achille</strong> (portion moyenne, 2–6&nbsp;cm au-dessus du talon). Programme progressif sur 8&nbsp;semaines&nbsp;: calmer la douleur, reconstruire la capacité du tendon, renforcer tout le corps pour le trail, puis reprendre la course par étapes.</p>
+  <div class="meta">
+    <span>MATÉRIEL&nbsp;: marche/escalier · haltères · élastique · sac à dos lesté · balle de tennis</span>
+    <span>3 PHASES · PROGRESSION PAR CRITÈRES</span>
+  </div>
+</header>
+
+<section class="box alert">
+  <h4>⚠ À lire avant de commencer</h4>
+  <p>Ce guide s'appuie sur les protocoles de référence pour la tendinopathie d'Achille (mise en charge progressive type Alfredson / Heavy Slow Resistance), mais il ne remplace pas un avis médical. Ta douleur étant <strong>chronique et résistante</strong>, une consultation chez un <strong>médecin du sport</strong> (avec échographie pour confirmer le diagnostic) et/ou un <strong>kiné du sport</strong> pour superviser ce type de protocole est fortement recommandée — d'autant que d'autres causes peuvent mimer une tendinopathie (bursite, atteinte du plantaire grêle...).</p>
+</section>
+
+<section>
+  <span class="blaze"><i></i><i></i></span>
+  <h2 style="margin-top:10px;">Les 4 règles d'or</h2>
+  <div class="rules">
+    <div class="rule"><span class="num">01</span><strong>La charge soigne, pas le repos</strong><p>Un tendon se reconstruit en réponse à une charge progressive. Le repos complet le déconditionne et la douleur revient à la reprise. On ne s'arrête pas : on charge intelligemment.</p></div>
+    <div class="rule"><span class="num">02</span><strong>La douleur se pilote, elle ne s'évite pas</strong><p>Une douleur jusqu'à 3/10 pendant et après l'exercice est acceptable — et normale. C'est la réaction à 24&nbsp;h qui compte (voir le feu tricolore).</p></div>
+    <div class="rule"><span class="num">03</span><strong>La raideur matinale est ton baromètre</strong><p>Note chaque matin la raideur/douleur des premiers pas (sur 10). Si elle augmente nettement le lendemain d'une séance, la charge était trop forte : recule d'un cran.</p></div>
+    <div class="rule"><span class="num">04</span><strong>On progresse par critères, pas par calendrier</strong><p>Les semaines sont indicatives. Ne passe à la phase suivante que si les critères de sortie sont validés — quitte à prolonger une phase de 1 à 2 semaines.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Feu tricolore de la douleur</h2>
+  <p class="muted">À appliquer pendant chaque exercice et le lendemain matin.</p>
+  <div class="lights">
+    <div class="light g"><span class="dot"></span><strong>0–3 / 10</strong><p>Zone de travail idéale. Continue, et augmente progressivement la charge si tu restes dans cette zone.</p></div>
+    <div class="light a"><span class="dot"></span><strong>4–5 / 10</strong><p>Tolérable ponctuellement si la douleur revient à son niveau habituel sous 24&nbsp;h. Ne monte pas la charge, réduis-la légèrement à la séance suivante.</p></div>
+    <div class="light r"><span class="dot"></span><strong>&gt; 5 / 10 ou réaction &gt; 24 h</strong><p>Trop. Reviens à la variante précédente (moins de charge, deux pieds au lieu d'un, amplitude réduite) pendant quelques jours, puis re-progresse.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Vue d'ensemble</h2>
+  <div class="overview">
+    <div class="ph"><span class="weeks">SEMAINES 1–2</span><strong>Phase 1 · Calmer</strong><p>Isométries quotidiennes pour désensibiliser le tendon, renfo général sans impact, marche rapide. Sortie de phase&nbsp;: douleur quotidienne ≤&nbsp;3/10 et raideur matinale en baisse.</p></div>
+    <div class="ph p2"><span class="weeks">SEMAINES 3–6</span><strong>Phase 2 · Charger</strong><p>Renforcement lourd et lent du mollet (HSR) 3×/sem, renfo trail complet 2×/sem. Sortie de phase&nbsp;: mollet unipodal chargé 4×6 sans dépasser 3/10 ni réaction à 24&nbsp;h.</p></div>
+    <div class="ph p3"><span class="weeks">SEMAINES 7–8+</span><strong>Phase 3 · Restituer</strong><p>Réintroduire l'élasticité (sautillements, corde) puis la course en alternance marche/course. Le tendon doit réapprendre à stocker et restituer l'énergie avant de courir.</p></div>
+  </div>
+</section>
+
+<!-- ══════════════════ PHASE 1 ══════════════════ -->
+<section class="phase-head">
+  <span class="blaze"><i></i><i></i></span>
+  <p class="kicker">Phase 1 · Semaines 1–2</p>
+  <h2>Calmer et recharger en douceur</h2>
+  <p class="objectif"><strong>Objectif :</strong> désensibiliser le tendon avec des contractions isométriques quotidiennes (elles ont souvent un effet antalgique immédiat), entretenir le reste du corps sans impact, et garder une activité cardio indolore. Aucun saut, aucune course, pas de côtes.</p>
+
+  <h3>Semaine type — à répéter en S1 et S2</h3>
+  <div class="week">
+    <div class="day"><div class="day-label"><span class="d">J1</span><span class="wd">Lun</span></div><div class="day-body">
+      <div class="tags"><span class="tag tendon">Tendon</span><span class="tag renfo">Renfo A · bas du corps</span></div>
+      <ul class="exos">
+        <li>Isométries mollet genou tendu <span class="chip">5×45s · repos 90s</span> — sur 1 jambe si douleur ≤3, sinon 2 jambes + sac lesté</li>
+        <li>Isométries mollet genou fléchi ~30° <span class="chip">3×30s</span></li>
+        <li>Pont fessier <span class="chip">3×12</span> · Abduction hanche élastique <span class="chip">3×15/côté</span> · Clamshell <span class="chip">2×15/côté</span></li>
+        <li>Squat gobelet haltère, amplitude confortable <span class="chip">3×10</span></li>
+        <li>Relevés du tibial antérieur <span class="chip">3×15</span></li>
+      </ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J2</span><span class="wd">Mar</span></div><div class="day-body">
+      <div class="tags"><span class="tag tendon">Tendon</span><span class="tag cardio">Cardio</span></div>
+      <ul class="exos">
+        <li>Isométries mollet <span class="chip">5×45s tendu + 3×30s fléchi</span></li>
+        <li>Marche rapide sur plat <span class="chip">30–40 min</span> — uniquement si douleur ≤3 pendant et après (sinon vélo si dispo)</li>
+        <li>Balle de tennis sous la voûte plantaire <span class="chip">2 min/pied</span> + mobilité cheville douce (cercles, flexions sans forcer)</li>
+      </ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J3</span><span class="wd">Mer</span></div><div class="day-body">
+      <div class="tags"><span class="tag tendon">Tendon</span><span class="tag renfo">Renfo B · tronc + haut</span></div>
+      <ul class="exos">
+        <li>Isométries mollet <span class="chip">5×45s tendu + 3×30s fléchi</span></li>
+        <li>Planche <span class="chip">3×30–45s</span> · Planche latérale <span class="chip">2×30s/côté</span> · Dead bug <span class="chip">3×10</span></li>
+        <li>Rowing haltère unilatéral <span class="chip">3×10/côté</span> · Pompes <span class="chip">3×8–12</span> · Développé épaules haltères <span class="chip">3×10</span></li>
+      </ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J4</span><span class="wd">Jeu</span></div><div class="day-body">
+      <div class="tags"><span class="tag tendon">Tendon</span><span class="tag cardio">Cardio</span></div>
+      <ul class="exos">
+        <li>Isométries mollet <span class="chip">5×45s tendu + 3×30s fléchi</span></li>
+        <li>Marche rapide <span class="chip">30–40 min</span> ou vélo</li>
+        <li>Proprioception unipodale <span class="chip">3×45s/jambe</span> — sol dur, genou souple</li>
+      </ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J5</span><span class="wd">Ven</span></div><div class="day-body">
+      <div class="tags"><span class="tag tendon">Tendon</span><span class="tag renfo">Renfo A · bas du corps</span></div>
+      <ul class="exos">
+        <li>Isométries mollet <span class="chip">5×45s tendu + 3×30s fléchi</span></li>
+        <li>Même séance que J1 (pont fessier, abductions, clamshell, squat gobelet, tibial antérieur)</li>
+      </ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J6</span><span class="wd">Sam</span></div><div class="day-body">
+      <div class="tags"><span class="tag tendon">Tendon</span><span class="tag cardio">Cardio long</span></div>
+      <ul class="exos">
+        <li>Isométries mollet <span class="chip">5×45s tendu + 3×30s fléchi</span></li>
+        <li>Marche <span class="chip">45–60 min</span> terrain plat, ou vélo <span class="chip">45–60 min</span></li>
+        <li>Balle plantaire <span class="chip">2 min/pied</span></li>
+      </ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J7</span><span class="wd">Dim</span></div><div class="day-body">
+      <div class="tags"><span class="tag repos">Repos</span></div>
+      <ul class="exos">
+        <li>Repos complet. Les isométries restent autorisées si elles te soulagent (c'est souvent le cas).</li>
+      </ul>
+    </div></div>
+  </div>
+
+  <div class="box note">
+    <h4>Pendant toute la phase 1</h4>
+    <ul>
+      <li><strong>Pas d'étirements agressifs du mollet</strong> : ils compriment le tendon irrité. Le renforcement en amplitude (phase 2) fera le travail de souplesse.</li>
+      <li>Évite les chaussures plates / drop 0 au quotidien ; une petite <strong>talonnette (~1 cm)</strong> dans les deux chaussures peut soulager temporairement.</li>
+      <li>Les anti-inflammatoires ont un intérêt limité dans la tendinopathie chronique (le processus est peu inflammatoire) — à discuter avec ton médecin plutôt qu'en automédication prolongée.</li>
+      <li><strong>Critères de sortie :</strong> douleur quotidienne ≤ 3/10, raideur matinale en baisse nette, isométries unipodales lourdes bien tolérées.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════════════ PHASE 2 ══════════════════ -->
+<section class="phase-head">
+  <span class="blaze"><i></i><i></i></span>
+  <p class="kicker">Phase 2 · Semaines 3–6</p>
+  <h2>Charger lourd et lent (HSR)</h2>
+  <p class="objectif"><strong>Objectif :</strong> reconstruire la capacité du tendon avec du renforcement lourd et lent (<em>Heavy Slow Resistance</em>) 3×/semaine, en travaillant les deux muscles du mollet — genou tendu (gastrocnémien) et genou fléchi (soléaire, le muscle-clé du traileur en montée). En parallèle : renfo trail complet 2×/semaine.</p>
+
+  <h3>Semaine type — Lun / Mer / Ven = tendon · Mar / Jeu = renfo trail</h3>
+  <div class="week">
+    <div class="day"><div class="day-label"><span class="d">J1</span><span class="wd">Lun</span></div><div class="day-body">
+      <div class="tags"><span class="tag tendon">Tendon HSR</span></div>
+      <ul class="exos">
+        <li>Échauffement : marche 5 min + isométries légères <span class="chip">2×30s</span></li>
+        <li>Montées de mollet genou tendu, tempo lent <span class="chip">3s ↑ · 1s pause · 3s ↓</span> — séries selon le tableau de progression ci-dessous</li>
+        <li>Montées de mollet genou fléchi ~30–45° <span class="chip">3 séries · même tempo</span></li>
+        <li>Tibial antérieur élastique <span class="chip">3×15</span> · Proprio unipodale <span class="chip">3×45s</span></li>
+      </ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J2</span><span class="wd">Mar</span></div><div class="day-body">
+      <div class="tags"><span class="tag renfo">Renfo trail complet</span></div>
+      <ul class="exos">
+        <li>Fente bulgare (pied arrière sur la marche) <span class="chip">3×8/jambe</span> · Soulevé de terre unijambiste haltère <span class="chip">3×8/jambe</span></li>
+        <li>Hip thrust épaules sur canapé, haltère sur les hanches <span class="chip">3×12</span> · Step-up sur marche <span class="chip">3×10/jambe</span></li>
+        <li>Abduction hanche élastique <span class="chip">3×15/côté</span> · Pallof press élastique <span class="chip">3×10/côté</span> · Planche latérale <span class="chip">2×30–45s/côté</span></li>
+        <li>Haut du corps : pompes <span class="chip">3×max-2</span> · rowing haltère <span class="chip">3×10/côté</span> · développé épaules <span class="chip">3×10</span></li>
+      </ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J3</span><span class="wd">Mer</span></div><div class="day-body">
+      <div class="tags"><span class="tag tendon">Tendon HSR</span></div>
+      <ul class="exos"><li>Même séance que J1</li></ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J4</span><span class="wd">Jeu</span></div><div class="day-body">
+      <div class="tags"><span class="tag renfo">Renfo trail complet</span></div>
+      <ul class="exos"><li>Même séance que J2 (monte légèrement les charges d'une semaine à l'autre)</li></ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J5</span><span class="wd">Ven</span></div><div class="day-body">
+      <div class="tags"><span class="tag tendon">Tendon HSR</span></div>
+      <ul class="exos"><li>Même séance que J1</li></ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J6</span><span class="wd">Sam</span></div><div class="day-body">
+      <div class="tags"><span class="tag cardio">Cardio long</span></div>
+      <ul class="exos">
+        <li>Marche rapide ou rando facile sur plat <span class="chip">45–90 min</span>, ou vélo <span class="chip">45–60 min</span></li>
+        <li>Balle plantaire + mobilité générale <span class="chip">10 min</span></li>
+      </ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J7</span><span class="wd">Dim</span></div><div class="day-body">
+      <div class="tags"><span class="tag repos">Repos</span></div>
+      <ul class="exos"><li>Repos complet.</li></ul>
+    </div></div>
+  </div>
+
+  <h3>Progression du HSR mollet (genou tendu et genou fléchi)</h3>
+  <table>
+    <tr><th>Semaine</th><th>Variante</th><th>Volume</th><th>Charge</th></tr>
+    <tr><td>S3</td><td>Au sol (sans marche) : montée à 2 pieds, descente sur 1 pied</td><td>3×12 /jambe</td><td>Poids du corps</td></tr>
+    <tr><td>S4</td><td>Sur la marche, amplitude complète (le talon descend sous l'horizontale)</td><td>3×10 /jambe</td><td>+ haltère léger ou sac à dos 5 kg</td></tr>
+    <tr><td>S5</td><td>Unipodal complet sur la marche</td><td>4×8 /jambe</td><td>Charge qui rend les 2 dernières reps difficiles (RPE 7–8)</td></tr>
+    <tr><td>S6</td><td>Unipodal sur la marche, plus lourd et plus lent</td><td>4×6 /jambe</td><td>Augmente encore si douleur ≤3 et pas de réaction à 24 h</td></tr>
+  </table>
+  <p class="muted" style="margin-top:8px;">Pour charger : haltère dans la main du côté travaillé (l'autre main tient le mur/la rampe) et/ou sac à dos lesté (bouteilles d'eau, livres). Vise une charge <strong>lourde</strong> : c'est l'intensité, pas le volume, qui fait s'adapter le tendon.</p>
+
+  <div class="box note">
+    <h4>Alternative : protocole excentrique d'Alfredson</h4>
+    <p>Si tu préfères le protocole historique : 3×15 genou tendu + 3×15 genou fléchi, <strong>2×/jour, 7 j/7</strong>, sur la marche — montée avec les deux jambes, descente lente sur la jambe douloureuse uniquement. Efficacité comparable au HSR, mais plus contraignant au quotidien. <strong>Choisis un seul des deux protocoles</strong>, ne les cumule pas.</p>
+  </div>
+
+  <div class="box">
+    <h4>Critères de sortie de phase 2</h4>
+    <ul>
+      <li>4×6 montées de mollet unipodales bien chargées, douleur ≤ 3/10 pendant, sans réaction le lendemain matin</li>
+      <li>Raideur matinale quasi disparue en semaine courante</li>
+      <li>Marche rapide 60+ min totalement indolore</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════════════ PHASE 3 ══════════════════ -->
+<section class="phase-head">
+  <span class="blaze"><i></i><i></i></span>
+  <p class="kicker">Phase 3 · Semaines 7–8 et suivantes</p>
+  <h2>Restituer l'énergie, puis courir</h2>
+  <p class="objectif"><strong>Objectif :</strong> réhabituer le tendon à son vrai métier — stocker et restituer l'énergie élastique — avec de la pliométrie très progressive, avant de réintroduire la course en alternance marche/course. On garde 2 séances de mollet lourd par semaine en entretien : c'est ce qui protège durablement le tendon.</p>
+
+  <h3>Semaine type</h3>
+  <div class="week">
+    <div class="day"><div class="day-label"><span class="d">J1</span><span class="wd">Lun</span></div><div class="day-body">
+      <div class="tags"><span class="tag tendon">Tendon · entretien</span><span class="tag renfo">Renfo bas</span></div>
+      <ul class="exos">
+        <li>Mollet genou tendu lourd <span class="chip">3×8</span> · genou fléchi <span class="chip">3×8</span> — même tempo lent qu'en phase 2</li>
+        <li>Fente bulgare <span class="chip">3×8/jambe</span> · Soulevé de terre unijambiste <span class="chip">3×8/jambe</span> · Hip thrust <span class="chip">3×12</span></li>
+      </ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J2</span><span class="wd">Mar</span></div><div class="day-body">
+      <div class="tags"><span class="tag plio">Pliométrie légère</span></div>
+      <ul class="exos">
+        <li>Échauffement : marche 10 min + isométries <span class="chip">2×30s</span></li>
+        <li>Sautillements bipodaux sur place ou corde à sauter <span class="chip">3×30s · repos 60s</span> — souple, silencieux, sur l'avant-pied</li>
+        <li>Montées de mollet dynamiques (rapides à la montée, contrôlées à la descente) <span class="chip">3×10</span></li>
+        <li>Gainage : planche <span class="chip">3×45s</span> · dead bug <span class="chip">3×10</span></li>
+      </ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J3</span><span class="wd">Mer</span></div><div class="day-body">
+      <div class="tags"><span class="tag cardio">Cardio</span></div>
+      <ul class="exos"><li>Marche rapide ou vélo <span class="chip">40–60 min</span> + mobilité</li></ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J4</span><span class="wd">Jeu</span></div><div class="day-body">
+      <div class="tags"><span class="tag plio">Pliométrie</span><span class="tag renfo">Renfo haut</span></div>
+      <ul class="exos">
+        <li>Progression plio : <span class="chip">4×40s</span> bipodal, puis sautillements <strong>unipodaux</strong> <span class="chip">3×15/jambe</span> quand le bipodal ne provoque plus rien</li>
+        <li>Pompes · rowing · développé épaules <span class="chip">3 séries chacun</span> · Pallof press <span class="chip">3×10/côté</span></li>
+      </ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J5</span><span class="wd">Ven</span></div><div class="day-body">
+      <div class="tags"><span class="tag tendon">Tendon · entretien</span></div>
+      <ul class="exos">
+        <li>Mollet genou tendu lourd <span class="chip">3×8</span> · genou fléchi <span class="chip">3×8</span> · Proprio unipodale yeux fermés <span class="chip">3×45s</span></li>
+      </ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J6</span><span class="wd">Sam</span></div><div class="day-body">
+      <div class="tags"><span class="tag course">Retour course</span></div>
+      <ul class="exos">
+        <li>Dès que les sautillements unipodaux sont indolores : protocole marche/course ci-dessous, terrain plat et souple, allure très facile</li>
+        <li>Tant que ce n'est pas le cas : marche rapide <span class="chip">60 min</span></li>
+      </ul>
+    </div></div>
+    <div class="day"><div class="day-label"><span class="d">J7</span><span class="wd">Dim</span></div><div class="day-body">
+      <div class="tags"><span class="tag repos">Repos</span></div>
+      <ul class="exos"><li>Repos complet. Vérifie la raideur matinale après chaque nouveauté de la semaine.</li></ul>
+    </div></div>
+  </div>
+
+  <h3>Protocole de reprise de la course</h3>
+  <table>
+    <tr><th>Sortie</th><th>Contenu</th><th>Règle</th></tr>
+    <tr><td>R1</td><td>8 × (1 min course / 2 min marche)</td><td rowspan="5">48 h minimum entre deux sorties.<br><br>Passe à la sortie suivante uniquement si la précédente n'a provoqué ni douleur &gt; 3/10, ni raideur matinale accrue le lendemain. Sinon, répète-la.</td></tr>
+    <tr><td>R2</td><td>6 × (2 min course / 2 min marche)</td></tr>
+    <tr><td>R3</td><td>5 × (3 min course / 1 min marche)</td></tr>
+    <tr><td>R4</td><td>4 × (5 min course / 1 min marche)</td></tr>
+    <tr><td>R5</td><td>30 min de course continue, allure facile</td></tr>
+  </table>
+  <div class="box note">
+    <h4>Après R5 : retour au trail</h4>
+    <ul>
+      <li>Augmente <strong>une seule variable à la fois</strong> : d'abord la durée (+10–15 %/sem max), puis le dénivelé, puis l'allure.</li>
+      <li>Les côtes raides, les descentes longues et le fractionné sont les <strong>dernières</strong> choses à réintroduire (fortes contraintes sur l'Achille) — pas avant 2–3 semaines de course continue confortable.</li>
+      <li>Garde <strong>2 séances de mollet lourd par semaine</strong> pendant au moins 3 mois, puis 1/semaine à vie de traileur. C'est ta meilleure assurance anti-récidive.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════════════ FICHES ══════════════════ -->
+<section class="phase-head">
+  <span class="blaze"><i></i><i></i></span>
+  <p class="kicker">Annexe</p>
+  <h2>Fiches techniques des exercices</h2>
+  <div class="fiches">
+    <div class="fiche"><h4>Isométrie mollet</h4>
+      <p><span class="lbl">Position</span> Debout, avant-pieds au sol ou sur la marche, mains sur le mur pour l'équilibre.</p>
+      <p><span class="lbl">Exécution</span> Monte sur pointes à mi-hauteur et tiens la position sans bouger, en respirant. Genou tendu = gastrocnémien ; genou fléchi ~30° = soléaire.</p>
+      <p><span class="lbl">Charge</span> Assez lourde pour que 45 s soient exigeantes : une jambe, ou deux jambes + sac lesté.</p></div>
+    <div class="fiche"><h4>Montée de mollet HSR (genou tendu)</h4>
+      <p><span class="lbl">Position</span> Avant-pied sur le bord de la marche, talon dans le vide, main au mur/rampe.</p>
+      <p><span class="lbl">Exécution</span> Monte en 3 s, pause 1 s en haut, descends en 3 s jusqu'à l'étirement complet (talon sous le niveau de la marche). Aucun rebond, contrôle total.</p>
+      <p><span class="lbl">Charge</span> Haltère dans la main du côté travaillé et/ou sac à dos. Les 2 dernières reps doivent être difficiles.</p></div>
+    <div class="fiche"><h4>Montée de mollet genou fléchi (soléaire)</h4>
+      <p><span class="lbl">Exécution</span> Même geste, genou plié à 30–45° et maintenu plié pendant tout le mouvement.</p>
+      <p><span class="lbl">Pourquoi</span> Le soléaire encaisse l'essentiel de la charge en montée en trail : il est aussi important que le gastrocnémien, ne le saute jamais.</p></div>
+    <div class="fiche"><h4>Fente bulgare</h4>
+      <p><span class="lbl">Position</span> Pied arrière posé sur la marche ou une chaise, haltères en mains.</p>
+      <p><span class="lbl">Exécution</span> Descends verticalement (le buste ne plonge pas), genou avant aligné au-dessus du pied, remonte en poussant dans le talon avant.</p></div>
+    <div class="fiche"><h4>Soulevé de terre unijambiste</h4>
+      <p><span class="lbl">Position</span> Debout sur une jambe, haltère dans la main opposée.</p>
+      <p><span class="lbl">Exécution</span> Bascule le buste vers l'avant dos plat, jambe libre tendue vers l'arrière, jusqu'à sentir l'arrière de cuisse ; remonte en serrant le fessier. Équilibre + chaîne postérieure = or pour le trail.</p></div>
+    <div class="fiche"><h4>Hip thrust</h4>
+      <p><span class="lbl">Position</span> Haut du dos appuyé sur le canapé/banc, pieds au sol, haltère posé sur les hanches.</p>
+      <p><span class="lbl">Exécution</span> Monte le bassin jusqu'à l'alignement épaules-genoux, serre les fessiers 1 s en haut, redescends contrôlé.</p></div>
+    <div class="fiche"><h4>Step-up</h4>
+      <p><span class="lbl">Exécution</span> Monte sur la marche en poussant uniquement sur la jambe avant (l'arrière ne donne pas d'élan), redescends en 2–3 s contrôlées. Haltères en mains pour charger.</p></div>
+    <div class="fiche"><h4>Tibial antérieur</h4>
+      <p><span class="lbl">Exécution</span> Assis, élastique autour de l'avant-pied fixé devant toi : ramène la pointe vers toi lentement. Ou debout adossé au mur, talons à 20 cm du mur : relève les pointes de pied. Protège tibias et cheville en descente.</p></div>
+    <div class="fiche"><h4>Pallof press</h4>
+      <p><span class="lbl">Position</span> Élastique fixé sur le côté (poignée de porte), tenu à deux mains contre le sternum.</p>
+      <p><span class="lbl">Exécution</span> Tends les bras devant toi sans laisser le buste tourner, tiens 2 s, reviens. Anti-rotation du tronc — précieux sur terrain technique.</p></div>
+    <div class="fiche"><h4>Dead bug</h4>
+      <p><span class="lbl">Exécution</span> Sur le dos, lombaires plaquées au sol, bras et genoux à 90° : étends lentement bras et jambe opposés sans décoller le bas du dos, reviens, alterne.</p></div>
+    <div class="fiche"><h4>Proprioception unipodale</h4>
+      <p><span class="lbl">Exécution</span> Tiens 45 s sur un pied, genou souple. Progression : yeux fermés → serviette pliée/coussin sous le pied → mouvements de tête ou lancer de balle contre un mur.</p></div>
+    <div class="fiche"><h4>Balle plantaire</h4>
+      <p><span class="lbl">Exécution</span> Debout ou assis, roule une balle de tennis sous la voûte plantaire, pression modérée, 2 min par pied. Détend la chaîne postérieure sans étirer le tendon.</p></div>
+  </div>
+</section>
+
+<!-- ══════════════════ CONSULTER ══════════════════ -->
+<section>
+  <div class="box alert">
+    <h4>Consulte sans attendre si…</h4>
+    <ul>
+      <li><strong>Claquement soudain</strong> avec impossibilité de monter sur la pointe du pied → urgence (suspicion de rupture).</li>
+      <li>Douleur <strong>nocturne ou au repos</strong> qui s'installe, gonflement ou rougeur marqués du tendon.</li>
+      <li><strong>Aucune amélioration après 4 semaines</strong> de protocole bien conduit → médecin du sport + échographie. Un kiné pourra aussi ajuster les charges, et des options complémentaires existent (ondes de choc, semelles) si la progression stagne.</li>
+    </ul>
+  </div>
+  <div class="box">
+    <h4>Ce qui aide en coulisses</h4>
+    <ul>
+      <li><strong>Sommeil</strong> : le tendon se répare la nuit — vise tes 7–8 h, surtout après les séances lourdes.</li>
+      <li><strong>Protéines</strong> : apport régulier réparti sur la journée (~1,6 g/kg/j pour un sportif en rééducation).</li>
+      <li><strong>Patience structurelle</strong> : le collagène du tendon se renouvelle sur des mois. La douleur part avant que le tendon soit solide — c'est le piège classique de la reprise trop rapide. Fais confiance aux critères, pas aux sensations d'un bon jour.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <span class="blaze"><i></i><i></i></span>
+  <p style="margin-top:10px;">Protocole basé sur les principes de mise en charge progressive (Alfredson, Heavy Slow Resistance) pour la tendinopathie du corps du tendon d'Achille · Progression par critères · Ne remplace pas un suivi médical. Imprime ce guide et coche tes séances — rendez-vous sur la ligne de départ dans quelques mois.</p>
+</footer>
+
+</div>
+</body>
+</html>

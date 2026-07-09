@@ -1,0 +1,16 @@
+# Dépendances
+node_modules/
+
+# Build (généré par GitHub Actions, pas versionné)
+dist/
+dev-dist/
+
+# Fichiers de travail / temporaires
+scratch_*
+*.log
+
+# OS / éditeurs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
