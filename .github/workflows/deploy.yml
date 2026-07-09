@@ -12,10 +12,11 @@ permissions:
   pages: write
   id-token: write
 
-# Une seule exécution à la fois ; on n'annule pas un déploiement en cours.
+# Une seule exécution à la fois. On ANNULE un déploiement resté en cours :
+# évite qu'un vieux run bloqué tienne le verrou et coince tous les suivants.
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
