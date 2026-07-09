@@ -458,6 +458,7 @@ export function render(v) {
               </div>
               <input type="file" accept="application/json" ref={v.importRef} onChange={v.importData} style={{ display: 'none' }}/>
               <div style={{ fontSize: '11px', color: 'rgba(238,240,234,.35)', textAlign: 'center', paddingBottom: '4px' }}>Tout est stocké sur ce téléphone uniquement.</div>
+              <div style={{ fontSize: '10px', color: 'rgba(238,240,234,.25)', textAlign: 'center', letterSpacing: '.5px' }}>Achille v{v.appVersion} · build {v.buildDate}</div>
             </div>
           </div>
         )}

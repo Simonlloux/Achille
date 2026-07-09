@@ -12,6 +12,10 @@ const CONFIG = {
 
 const KEY = 'achille_night_v1';
 
+// Injectés au build par Vite (voir vite.config.js). Fallback pour le dev.
+const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'dev';
+const BUILD_DATE = typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : 'local';
+
 export default class App extends React.Component {
   importRef = React.createRef();
   PH = PHASES;
@@ -880,6 +884,10 @@ export default class App extends React.Component {
       // toast
       hasToast: !!S.toast,
       toast: S.toast,
+
+      // version
+      appVersion: APP_VERSION,
+      buildDate: BUILD_DATE,
     };
   }
 
