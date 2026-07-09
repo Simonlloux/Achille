@@ -14,7 +14,7 @@ const BUILD_DATE = new Date().toLocaleDateString('fr-FR', {
 export default defineConfig({
   define: {
     __BUILD_DATE__: JSON.stringify(BUILD_DATE),
-    __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.1.0'),
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.2.0'),
   },
   // GitHub Pages sert l'app depuis /Achille/ (nom du dépôt), pas la racine.
   // Ce base doit correspondre au nom exact du repo, sinon les assets 404.

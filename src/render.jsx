@@ -530,6 +530,9 @@ export function render(v) {
                   <div style={{ textAlign: 'center', marginTop: '16px' }}>
                     <div style={{ fontSize: '19px', fontWeight: 700, lineHeight: 1.3 }}>{v.sesExName}</div>
                     <div style={{ fontSize: '13px', color: 'rgba(238,240,234,.5)', marginTop: '4px' }}>{v.sesSetLabel}</div>
+                    {v.sesSide && (
+                      <div style={{ display: 'inline-block', marginTop: '8px', fontSize: '14px', fontWeight: 700, letterSpacing: '.5px', color: v.sesSideColor, background: 'rgba(255,255,255,.06)', border: '1px solid ' + v.sesSideColor + '55', borderRadius: '20px', padding: '4px 14px' }}>{v.sesSide}</div>
+                    )}
                   </div>
                   <div style={{ marginTop: '14px', background: '#181c19', border: '1px solid #232823', borderRadius: '14px', padding: '14px 16px', fontSize: '14px', lineHeight: 1.55, color: 'rgba(238,240,234,.88)', textAlign: 'center' }}>{v.sesCue}</div>
 

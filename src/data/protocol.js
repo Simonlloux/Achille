@@ -116,7 +116,7 @@ export const PHASES = [
       {
         name: 'Montées mollet genou tendu — tempo 3-1-3',
         meta: '3 × 12 · montée 2 pieds, descente 1 pied',
-        sets: 3, reps: 12, rest: 90,
+        sets: 3, reps: 12, rest: 90, perSide: true,
         setup: 'Au sol pour commencer : monte à 2 pieds, descends sur 1 pied. Quand c\'est facile et ≤ 3/10 : passe sur la marche, amplitude complète (talon sous l\'horizontale), puis + lest léger (sac 5 kg).',
         cue: 'Monte en 3 s, pause 1 s en haut, descends en 3 s. Aucun rebond, contrôle total. 12 par jambe.',
         tempo: ['Montée 3 s', 'Pause 1 s', 'Descente 3 s'],
@@ -133,7 +133,7 @@ export const PHASES = [
       {
         name: 'Montées mollet genou fléchi — soléaire',
         meta: '3 × 12 · même tempo 3-1-3',
-        sets: 3, reps: 12, rest: 90,
+        sets: 3, reps: 12, rest: 90, perSide: true,
         setup: 'Même exercice, genou plié à 30–45° et MAINTENU plié pendant tout le mouvement.',
         cue: 'Monte 3 s, pause 1 s, descends 3 s, genou toujours fléchi. 12 par jambe.',
         tempo: ['Genou fléchi 30–45°', 'Montée 3 s', 'Descente 3 s'],
@@ -238,7 +238,7 @@ export const PHASES = [
       {
         name: 'Mollet lourd genou tendu — entretien',
         meta: '3 × 8 · tempo 3-1-3 · 2×/sem',
-        sets: 3, reps: 8, rest: 120,
+        sets: 3, reps: 8, rest: 120, perSide: true,
         setup: 'Unipodal sur la marche, haltère + sac lesté, comme en phase 3.',
         cue: 'Même tempo lent 3-1-3, charge lourde. C\'est l\'entretien qui protège durablement.',
         tempo: ['Montée 3 s', 'Pause 1 s', 'Descente 3 s'],
@@ -254,7 +254,7 @@ export const PHASES = [
       {
         name: 'Mollet lourd genou fléchi — entretien',
         meta: '3 × 8 · lourd',
-        sets: 3, reps: 8, rest: 90,
+        sets: 3, reps: 8, rest: 90, perSide: true,
         setup: 'Unipodal genou plié 30–45°, chargé.',
         cue: 'Tempo 3-1-3, genou toujours fléchi.',
         tempo: ['Genou fléchi 30–45°', 'Tempo 3-1-3'],

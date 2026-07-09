@@ -163,6 +163,19 @@ export default class App extends React.Component {
     };
   }
 
+  // Détecte si un exercice se fait UNE JAMBE À LA FOIS (unilatéral).
+  // Comme tu as mal aux deux tendons, ces exos se font des deux côtés (D + G).
+  // Override explicite possible via `e.perSide` dans les données.
+  isPerSide(e) {
+    if (typeof e.perSide === 'boolean') return e.perSide;
+    const s = ((e.name || '') + ' ' + (e.meta || '')).toLowerCase();
+    // Mots-clés unilatéraux. On EXCLUT « 2 jambes / deux jambes / bipodal ».
+    if (/\b(2 jambes|deux jambes|bipod)/.test(s)) return false;
+    return /(unipodal|unijambiste|1 jambe|une jambe|\/ ?jambe|\/ ?côté|bulgare|step-?up|clamshell|abduction)/.test(
+      s,
+    );
+  }
+
   // ---- session ----
   // La séance du jour = exos tendon du jour PUIS exos renfo du jour,
   // selon la semaine type de la phase. Jour de repos → liste vide.
@@ -184,7 +197,8 @@ export default class App extends React.Component {
           .filter((id) => CATALOGUE[id] && d.phase >= (CATALOGUE[id].minAchillePhase || 0))
           .map((id) => this.strengthItem(id, lvl))
       : [];
-    return [...tendon, ...renfo];
+    // Marque chaque exo unilatéral pour l'alternance D/G dans la séance guidée.
+    return [...tendon, ...renfo].map((e) => ({ ...e, perSide: this.isPerSide(e) }));
   }
   restFor(ex) {
     return Number(this.props.restSeconds ?? ex.rest ?? 60);
@@ -212,24 +226,45 @@ export default class App extends React.Component {
     if (!s) return;
     const list = this.guidedEx();
     const ex = list[s.li];
+    const SHORT_REST = 15; // repos court entre les deux côtés d'un tour D+G
+
     if (s.mode === 'ready') {
-      this.setState({ ses: { ...s, mode: ex.hold ? 'hold' : 'reps', t: ex.hold || 0 } });
+      // Démarre le travail. Côté 'D' d'office pour les exos unilatéraux.
+      this.setState({
+        ses: { ...s, mode: ex.hold ? 'hold' : 'reps', t: ex.hold || 0, side: ex.perSide ? 'D' : null },
+      });
       return;
     }
+
     if (s.mode === 'hold' || s.mode === 'reps') {
-      // Après CHAQUE série, y compris la dernière : repos. `last` marque le
-      // repos de fin d'exercice (récup avant l'exercice suivant).
+      // Exo unilatéral : après le côté DROIT, enchaîne le côté GAUCHE sans repos.
+      if (ex.perSide && s.side === 'D') {
+        this.setState({ ses: { ...s, mode: ex.hold ? 'hold' : 'reps', t: ex.hold || 0, side: 'G' } });
+        return;
+      }
+      // Fin d'un travail (série complète : les 2 côtés faits, ou exo normal).
+      // Repos après CHAQUE série, y compris la dernière. `last` = repos de fin
+      // d'exercice (récup avant l'exo suivant, durée normale). Sinon repos court
+      // pour les exos unilatéraux (entre deux tours), normal pour les autres.
       const isLast = s.set >= ex.sets;
       if (isLast) this.markDone(ex.key, true);
-      this.setState({ ses: { ...s, mode: 'rest', t: this.restFor(ex), last: isLast } });
+      const restT = isLast ? this.restFor(ex) : ex.perSide ? SHORT_REST : this.restFor(ex);
+      this.setState({ ses: { ...s, mode: 'rest', t: restT, last: isLast } });
       return;
     }
+
     if (s.mode === 'rest') {
-      // Fin du repos : soit série suivante du même exercice, soit exercice
-      // suivant, soit fin de séance.
+      // Fin du repos : série suivante (côté D pour unilatéral), exo suivant, ou fin.
       if (!s.last) {
         this.setState({
-          ses: { ...s, set: s.set + 1, mode: ex.hold ? 'hold' : 'reps', t: ex.hold || 0, last: false },
+          ses: {
+            ...s,
+            set: s.set + 1,
+            mode: ex.hold ? 'hold' : 'reps',
+            t: ex.hold || 0,
+            side: ex.perSide ? 'D' : null,
+            last: false,
+          },
         });
         return;
       }
@@ -374,10 +409,15 @@ export default class App extends React.Component {
     });
     const allDone = guided.length > 0 && guided.every((ex) => doneMap[ex.key]);
     const hasGuided = guided.length > 0;
-    const totalSec = guided.reduce(
-      (s, ex) => s + ex.sets * (ex.hold || ex.reps * 6) + (ex.sets - 1) * this.restFor(ex),
-      0,
-    );
+    const totalSec = guided.reduce((s, ex) => {
+      const workPerSet = ex.hold || ex.reps * 6;
+      // Exos unilatéraux : 2 côtés par série + repos court (15 s) entre les tours.
+      const factor = ex.perSide ? 2 : 1;
+      const shortRests = ex.perSide ? (ex.sets - 1) * 15 : 0;
+      return (
+        s + ex.sets * workPerSet * factor + shortRests + (ex.sets - 1) * this.restFor(ex)
+      );
+    }, 0);
     const sesMeta = hasGuided
       ? guided.length +
         ' exercice' +
@@ -706,11 +746,18 @@ export default class App extends React.Component {
       sesShowSkip: false,
       sesShowPause: false,
       sesPauseTxt: 'Pause',
+      sesSide: '',
+      sesSideColor: '#43e08a',
     };
     if (ses && sexo) {
       const circ = 540;
       sesVals.sesHeader = 'Exercice ' + (ses.li + 1) + ' / ' + guided.length;
       sesVals.sesExName = sexo.name;
+      // Côté travaillé (exos unilatéraux) : les deux jambes ont mal.
+      if (sexo.perSide && ses.side) {
+        sesVals.sesSide = ses.side === 'D' ? 'Jambe droite' : 'Jambe gauche';
+        sesVals.sesSideColor = ses.side === 'D' ? '#43e08a' : '#8ab0ff';
+      }
       sesVals.sesSetLabel = 'Série ' + ses.set + ' / ' + sexo.sets;
       const fmt = (s) =>
         s >= 60 ? Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') : String(s);
@@ -743,7 +790,9 @@ export default class App extends React.Component {
         sesVals.sesBig = fmt(ses.t);
         sesVals.sesUnit = 'récupération';
         sesVals.sesRingColor = '#f5b942';
-        sesVals.sesDash = (ses.t / this.restFor(sexo)) * circ + ' ' + circ;
+        // L'anneau se base sur la durée réelle du repos en cours (court ou long).
+        const restTotal = ses.t <= 20 && !ses.last ? 15 : this.restFor(sexo);
+        sesVals.sesDash = Math.min(1, ses.t / restTotal) * circ + ' ' + circ;
         if (ses.last) {
           // Repos de fin d'exercice : on annonce l'exercice suivant, ou la fin.
           const next = guided[ses.li + 1];
@@ -751,6 +800,11 @@ export default class App extends React.Component {
           sesVals.sesCue = next
             ? 'Récupère bien. Prochain exercice : ' + next.name + '.'
             : 'Récupère — c\'est la dernière ligne droite.';
+        } else if (sexo.perSide) {
+          // Repos court entre deux tours d'un exo unilatéral.
+          sesVals.sesModeLabel = 'Repos court';
+          sesVals.sesCue =
+            'Souffle un peu. Prochain tour (série ' + (ses.set + 1) + ') : on repart jambe droite.';
         } else {
           sesVals.sesModeLabel = 'Repos';
           sesVals.sesCue =
