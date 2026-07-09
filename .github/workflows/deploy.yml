@@ -3,23 +3,19 @@ name: Déploiement GitHub Pages
 # Déclenché à chaque push sur la branche principale.
 on:
   push:
-    branches: [main, master]
-  workflow_dispatch: # permet un déclenchement manuel depuis l'onglet Actions
+    branches: [main]
+  workflow_dispatch: # déclenchement manuel possible depuis l'onglet Actions
 
-# Permissions nécessaires pour publier sur Pages.
+# Le workflow doit pouvoir écrire dans le dépôt (pousser sur gh-pages).
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
-# Une seule exécution à la fois. On ANNULE un déploiement resté en cours :
-# évite qu'un vieux run bloqué tienne le verrou et coince tous les suivants.
 concurrency:
-  group: pages
+  group: pages-deploy
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du code
@@ -37,21 +33,13 @@ jobs:
       - name: Build de l'app
         run: npm run build
 
-      - name: Configuration de Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload de l'artefact (dossier dist)
-        uses: actions/upload-pages-artifact@v3
+      # Publie le contenu de dist/ sur la branche gh-pages.
+      # GitHub Pages sert ensuite cette branche directement (pas d'environnement
+      # protégé, donc pas de blocage possible en « queued »).
+      - name: Déploiement sur la branche gh-pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Déploiement sur GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          # Empêche Jekyll de traiter les fichiers (nécessaire pour un build Vite).
+          enable_jekyll: false
