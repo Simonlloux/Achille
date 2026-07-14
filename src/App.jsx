@@ -221,12 +221,16 @@ export default class App extends React.Component {
     }
     this.advance();
   }
+  // Repos entre les deux tours D+G d'un exo unilatéral. Par exercice via
+  // `sideRest` (ex. 45 s / 30 s pour les isométries), sinon 15 s par défaut.
+  sideRestFor(ex) {
+    return Number(ex.sideRest ?? 15);
+  }
   advance() {
     const s = this.state.ses;
     if (!s) return;
     const list = this.guidedEx();
     const ex = list[s.li];
-    const SHORT_REST = 15; // repos court entre les deux côtés d'un tour D+G
 
     if (s.mode === 'ready') {
       // Démarre le travail. Côté 'D' d'office pour les exos unilatéraux.
@@ -248,7 +252,11 @@ export default class App extends React.Component {
       // pour les exos unilatéraux (entre deux tours), normal pour les autres.
       const isLast = s.set >= ex.sets;
       if (isLast) this.markDone(ex.key, true);
-      const restT = isLast ? this.restFor(ex) : ex.perSide ? SHORT_REST : this.restFor(ex);
+      const restT = isLast
+        ? this.restFor(ex)
+        : ex.perSide
+          ? this.sideRestFor(ex)
+          : this.restFor(ex);
       this.setState({ ses: { ...s, mode: 'rest', t: restT, last: isLast } });
       return;
     }
@@ -770,28 +778,34 @@ export default class App extends React.Component {
         sesVals.sesCue = sexo.setup || '';
         sesVals.sesHint = (sexo.tempo || []).join(' · ');
       } else if (ses.mode === 'hold') {
-        sesVals.sesModeLabel = 'Tiens !';
+        // Exo unilatéral : le grand titre affiche le CÔTÉ ("Jambe droite" en vert,
+        // "Jambe gauche" en bleu). Sinon "Tiens !".
+        sesVals.sesModeLabel = sexo.perSide && ses.side ? sesVals.sesSide.toUpperCase() : 'Tiens !';
         sesVals.sesBig = fmt(ses.t);
         sesVals.sesUnit = 'secondes';
         sesVals.sesDash = (ses.t / sexo.hold) * circ + ' ' + circ;
         sesVals.sesCue = sexo.cue || '';
         sesVals.sesHint = 'Zone verte ≤ 3/10 · orange 4–5 ponctuel · > 5 = stop.';
+        if (sexo.perSide && ses.side) sesVals.sesRingColor = sesVals.sesSideColor;
         sesVals.sesShowPause = true;
         sesVals.sesPauseTxt = ses.paused ? 'Reprendre ▶' : 'Pause';
       } else if (ses.mode === 'reps') {
-        sesVals.sesModeLabel = 'À toi';
+        sesVals.sesModeLabel = sexo.perSide && ses.side ? sesVals.sesSide.toUpperCase() : 'À toi';
         sesVals.sesBig = String(sexo.reps);
         sesVals.sesUnit = 'répétitions';
         sesVals.sesDash = circ + ' ' + circ;
         sesVals.sesCue = sexo.cue || '';
         sesVals.sesHint = 'Prends ton temps, c\'est la lenteur qui soigne.';
         sesVals.sesShowDone = true;
+        if (sexo.perSide && ses.side) sesVals.sesRingColor = sesVals.sesSideColor;
       } else if (ses.mode === 'rest') {
         sesVals.sesBig = fmt(ses.t);
         sesVals.sesUnit = 'récupération';
         sesVals.sesRingColor = '#f5b942';
-        // L'anneau se base sur la durée réelle du repos en cours (court ou long).
-        const restTotal = ses.t <= 20 && !ses.last ? 15 : this.restFor(sexo);
+        // L'anneau se base sur la durée réelle du repos en cours : repos de fin
+        // (rest) ou repos entre tours d'un exo unilatéral (sideRest).
+        const restTotal =
+          !ses.last && sexo.perSide ? this.sideRestFor(sexo) : this.restFor(sexo);
         sesVals.sesDash = Math.min(1, ses.t / restTotal) * circ + ' ' + circ;
         if (ses.last) {
           // Repos de fin d'exercice : on annonce l'exercice suivant, ou la fin.
@@ -801,8 +815,8 @@ export default class App extends React.Component {
             ? 'Récupère bien. Prochain exercice : ' + next.name + '.'
             : 'Récupère — c\'est la dernière ligne droite.';
         } else if (sexo.perSide) {
-          // Repos court entre deux tours d'un exo unilatéral.
-          sesVals.sesModeLabel = 'Repos court';
+          // Repos entre deux tours d'un exo unilatéral.
+          sesVals.sesModeLabel = 'Récup';
           sesVals.sesCue =
             'Souffle un peu. Prochain tour (série ' + (ses.set + 1) + ') : on repart jambe droite.';
         } else {
