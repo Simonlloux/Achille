@@ -12,7 +12,7 @@
 //
 //  Critères possibles (voir protocol.js) :
 //    minDays          : plancher de jours dans la phase
-//    maxWakePain7d    : douleur au réveil (moy. 7 j) ≤ cette valeur
+//    maxWakePain7d    : douleur au réveil (moy. 3 j) ≤ cette valeur
 //    maxExercisePain  : douleur pendant l'exercice (moy. récente) ≤ cette valeur
 //    painMustNotRise  : la tendance douleur réveil ne doit pas monter
 // ============================================================================
@@ -23,10 +23,12 @@ export function evaluateGate({
   phaseStart,
   today,
   days,
-  wakeAvg7, // douleur réveil moyenne sur 7 j (ou null)
+  wakeAvg7, // douleur réveil moyenne sur la fenêtre (ou null)
+  wakeCount, // nb de jours notés dans la fenêtre
+  wakeWindow, // taille de la fenêtre (jours), défaut 3
   exerciseAvgRecent, // douleur exercice moyenne récente (ou null)
-  wakeLast7, // échantillons douleur réveil, 7 derniers jours
-  wakePrev7, // échantillons douleur réveil, 7 jours précédents
+  wakeLast7, // échantillons douleur réveil, fenêtre récente
+  wakePrev7, // échantillons douleur réveil, fenêtre précédente
   daysBetween,
 }) {
   const phase = phases[phaseIndex];
@@ -74,16 +76,24 @@ export function evaluateGate({
   }
 
   // Douleur au réveil (le juge principal du lendemain).
+  // Exige que la douleur ait été notée sur TOUTE la fenêtre (ex. 3 jours) :
+  // on ne débloque pas la phase sur une seule saisie isolée.
   if (typeof gate.maxWakePain7d === 'number') {
+    const win = wakeWindow || 3;
+    const enough = (wakeCount || 0) >= win;
     const has = wakeAvg7 !== null && wakeAvg7 !== undefined;
-    const ok = has && wakeAvg7 <= gate.maxWakePain7d;
+    const ok = enough && has && wakeAvg7 <= gate.maxWakePain7d;
+    let remaining;
+    if (!enough) remaining = 'note ' + win + ' jours de suite';
+    else if (!ok) remaining = 'à faire baisser';
+    else remaining = '';
     criteria.push({
       key: 'wake',
-      label: 'Douleur réveil (moy. 7 j)',
+      label: 'Douleur réveil (moy. ' + win + ' j)',
       ok,
       current: has ? wakeAvg7.toFixed(1) : '—',
       target: '≤ ' + gate.maxWakePain7d,
-      remaining: has ? (ok ? '' : 'à faire baisser') : 'note ta douleur réveil',
+      remaining,
     });
   }
 

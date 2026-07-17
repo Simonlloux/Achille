@@ -19,7 +19,7 @@
 //  short/label/weeks/goal : affichage (les semaines sont INDICATIVES)
 //  gate     : critères pour PROPOSER le passage à la phase suivante
 //             (minDays plancher de sécurité, maxWakePain7d douleur réveil
-//              moy. 7 j, maxExercisePain douleur à l'effort, painMustNotRise)
+//              moy. 3 j, maxExercisePain douleur à l'effort, painMustNotRise)
 //  ex       : exercices TENDON de la phase (la séance guidée les minute)
 //  schedule : SEMAINE TYPE — clé = jour JS getDay() (0=Dim, 1=Lun … 6=Sam).
 //             Chaque jour : {

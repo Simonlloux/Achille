@@ -3,6 +3,16 @@ import { PHASES, DEFAULT_APPOINTMENTS } from './data/protocol.js';
 import { CATALOGUE, FAMILY_LABELS } from './data/strength.js';
 import { render } from './render.jsx';
 import { evaluateGate } from './progression.js';
+import {
+  unlockSound,
+  soundTick,
+  soundSwitchSide,
+  soundRestStart,
+  soundGo,
+  soundFinish,
+  isSoundOn,
+  setSoundOn,
+} from './sound.js';
 
 // Config (anciennement des "props" du composant embarqué).
 const CONFIG = {
@@ -206,7 +216,14 @@ export default class App extends React.Component {
   startSession = () => {
     const list = this.guidedEx();
     if (!list.length) return;
+    unlockSound(); // débloque l'audio sur ce geste utilisateur (contrainte mobile)
     this.setState({ ses: { li: 0, set: 1, mode: 'ready', t: 5, paused: false } });
+  };
+  toggleSound = () => {
+    const on = !isSoundOn();
+    setSoundOn(on);
+    if (on) unlockSound();
+    this.forceUpdate();
   };
   sesEx() {
     const s = this.state.ses;
@@ -216,7 +233,10 @@ export default class App extends React.Component {
     const s = this.state.ses;
     if (!s || s.paused || s.mode === 'reps' || s.mode === 'done') return;
     if (s.t > 1) {
-      this.setState({ ses: { ...s, t: s.t - 1 } });
+      const next = s.t - 1;
+      // Décompte 3-2-1 sonore sur les phases chronométrées (maintien / repos).
+      if (next <= 3 && (s.mode === 'hold' || s.mode === 'rest')) soundTick();
+      this.setState({ ses: { ...s, t: next } });
       return;
     }
     this.advance();
@@ -243,6 +263,7 @@ export default class App extends React.Component {
     if (s.mode === 'hold' || s.mode === 'reps') {
       // Exo unilatéral : après le côté DROIT, enchaîne le côté GAUCHE sans repos.
       if (ex.perSide && s.side === 'D') {
+        soundSwitchSide(); // bip « change de jambe »
         this.setState({ ses: { ...s, mode: ex.hold ? 'hold' : 'reps', t: ex.hold || 0, side: 'G' } });
         return;
       }
@@ -257,6 +278,7 @@ export default class App extends React.Component {
         : ex.perSide
           ? this.sideRestFor(ex)
           : this.restFor(ex);
+      soundRestStart(); // son « relâche, c'est le repos »
       this.setState({ ses: { ...s, mode: 'rest', t: restT, last: isLast } });
       return;
     }
@@ -264,6 +286,7 @@ export default class App extends React.Component {
     if (s.mode === 'rest') {
       // Fin du repos : série suivante (côté D pour unilatéral), exo suivant, ou fin.
       if (!s.last) {
+        soundGo(); // son « on repart »
         this.setState({
           ses: {
             ...s,
@@ -277,9 +300,11 @@ export default class App extends React.Component {
         return;
       }
       if (s.li < list.length - 1) {
+        soundGo(); // reprise sur l'exercice suivant
         this.setState({ ses: { li: s.li + 1, set: 1, mode: 'ready', t: 5, paused: false } });
         return;
       }
+      soundFinish(); // mélodie de fin de séance
       this.setState({ ses: { ...s, mode: 'done' } });
     }
   }
@@ -512,17 +537,28 @@ export default class App extends React.Component {
     }));
 
     // ---- progression de phase — pilotée par la douleur (NOUVEAU) ----
-    // Douleur réveil (pm) : moyennes et échantillons pour tendance.
-    const wakeAvg7 = last7.length ? last7.reduce((s, x) => s + x.pm, 0) / last7.length : null;
-    const wakeLast7 = last7.map((x) => x.pm);
-    const wakePrev7 = prev7.map((x) => x.pm);
+    // Critère de progression : moyenne de la douleur réveil (pm) sur les
+    // 3 DERNIERS JOURS (fenêtre plus réactive que 7 j). L'affichage du Suivi
+    // reste sur 7 j — c'est ici, pour DÉBLOQUER la phase, qu'on veut du court.
+    const wake3 = this.lastNDates(3)
+      .map((dt) => d.days[dt])
+      .filter((x) => x && typeof x.pm === 'number')
+      .map((x) => x.pm);
+    const wakeAvg = wake3.length ? wake3.reduce((s, x) => s + x, 0) / wake3.length : null;
+    // Tendance : on compare les 3 derniers jours aux 3 précédents.
+    const wakeLastW = wake3;
+    const wakePrevW = this.lastNDates(6)
+      .slice(0, 3)
+      .map((dt) => d.days[dt])
+      .filter((x) => x && typeof x.pm === 'number')
+      .map((x) => x.pm);
     // Douleur pendant l'exercice (pe) : moyenne des jours récents où elle est notée.
-    const pe7 = this.lastNDates(7)
+    const pe3 = this.lastNDates(3)
       .map((dt) => d.days[dt])
       .filter((x) => x && typeof x.pe === 'number')
       .map((x) => x.pe);
-    const exerciseAvgRecent = pe7.length
-      ? pe7.reduce((s, x) => s + x, 0) / pe7.length
+    const exerciseAvgRecent = pe3.length
+      ? pe3.reduce((s, x) => s + x, 0) / pe3.length
       : null;
 
     const prog = evaluateGate({
@@ -531,10 +567,12 @@ export default class App extends React.Component {
       phaseStart: d.phaseStart || d.start,
       today: t,
       days: d.days,
-      wakeAvg7,
+      wakeAvg7: wakeAvg,
+      wakeCount: wake3.length, // nb de jours notés dans la fenêtre de 3 j
+      wakeWindow: 3,
       exerciseAvgRecent,
-      wakeLast7,
-      wakePrev7,
+      wakeLast7: wakeLastW,
+      wakePrev7: wakePrevW,
       daysBetween: (a, b) => this.daysBetween(a, b),
     });
     const advancePhase = () => {
@@ -557,10 +595,10 @@ export default class App extends React.Component {
     //   → recule d'un cran ». On PROPOSE (pas de recul forcé), et seulement
     //   si on n'est pas déjà en phase 1.
     const wakeRising =
-      wakeLast7.length >= 2 &&
-      wakePrev7.length >= 2 &&
-      wakeLast7.reduce((s, x) => s + x, 0) / wakeLast7.length >
-        wakePrev7.reduce((s, x) => s + x, 0) / wakePrev7.length + 1.5;
+      wakeLastW.length >= 2 &&
+      wakePrevW.length >= 2 &&
+      wakeLastW.reduce((s, x) => s + x, 0) / wakeLastW.length >
+        wakePrevW.reduce((s, x) => s + x, 0) / wakePrevW.length + 1.5;
     const painTooHigh =
       (exerciseAvgRecent !== null && exerciseAvgRecent > 5) ||
       (pmToday !== null && pmToday > 5);
@@ -948,6 +986,10 @@ export default class App extends React.Component {
       sesSetDone: () => this.advance(),
       sesSkip: () => this.advance(),
       sesPauseToggle: () => this.setState({ ses: { ...S.ses, paused: !S.ses.paused } }),
+
+      // son
+      soundOn: isSoundOn(),
+      toggleSound: this.toggleSound,
 
       // toast
       hasToast: !!S.toast,

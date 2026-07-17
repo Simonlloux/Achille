@@ -522,7 +522,7 @@ export function render(v) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div onClick={v.sesClose} style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#181c19', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'rgba(238,240,234,.7)', fontSize: '18px' }}>✕</div>
                 <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(238,240,234,.5)' }}>{v.sesHeader}</div>
-                <div style={{ width: '44px' }}></div>
+                <div onClick={v.toggleSound} title={v.soundOn ? 'Couper le son' : 'Activer le son'} style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#181c19', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: v.soundOn ? '#43e08a' : 'rgba(238,240,234,.35)', fontSize: '18px' }}>{v.soundOn ? '🔊' : '🔇'}</div>
               </div>
 
               {v.sesRunning && (
