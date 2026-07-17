@@ -10,9 +10,15 @@ import {
   soundRestStart,
   soundGo,
   soundFinish,
+  soundTest,
   isSoundOn,
   setSoundOn,
 } from './sound.js';
+import {
+  acquireWakeLock,
+  releaseWakeLock,
+  initWakeLockAutoReacquire,
+} from './wakelock.js';
 
 // Config (anciennement des "props" du composant embarqué).
 const CONFIG = {
@@ -69,9 +75,11 @@ export default class App extends React.Component {
     if (typeof d.strengthLevel !== 'number') d.strengthLevel = 0;
     this.setState({ data: d });
     this.timer = setInterval(() => this.tick(), 1000);
+    initWakeLockAutoReacquire(); // ré-active l'écran-allumé au retour d'arrière-plan
   }
   componentWillUnmount() {
     clearInterval(this.timer);
+    releaseWakeLock();
   }
 
   todayStr() {
@@ -217,6 +225,7 @@ export default class App extends React.Component {
     const list = this.guidedEx();
     if (!list.length) return;
     unlockSound(); // débloque l'audio sur ce geste utilisateur (contrainte mobile)
+    acquireWakeLock(); // garde l'écran allumé pendant la séance
     this.setState({ ses: { li: 0, set: 1, mode: 'ready', t: 5, paused: false } });
   };
   toggleSound = () => {
@@ -305,6 +314,7 @@ export default class App extends React.Component {
         return;
       }
       soundFinish(); // mélodie de fin de séance
+      releaseWakeLock(); // séance finie : l'écran peut se remettre en veille
       this.setState({ ses: { ...s, mode: 'done' } });
     }
   }
@@ -975,7 +985,10 @@ export default class App extends React.Component {
 
       // session
       ...sesVals,
-      sesClose: () => this.setState({ ses: null }),
+      sesClose: () => {
+        releaseWakeLock(); // libère l'écran quand on quitte la séance
+        this.setState({ ses: null });
+      },
       sesSkipEx: () => {
         const s = S.ses;
         if (!s) return;
@@ -990,6 +1003,11 @@ export default class App extends React.Component {
       // son
       soundOn: isSoundOn(),
       toggleSound: this.toggleSound,
+      testSound: () => {
+        setSoundOn(true);
+        soundTest();
+        this.forceUpdate();
+      },
 
       // toast
       hasToast: !!S.toast,

@@ -457,6 +457,21 @@ export function render(v) {
                 <div onClick={v.importClick} style={{ flex: 1, minHeight: '46px', border: '1px solid #232823', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 600, color: 'rgba(238,240,234,.7)', cursor: 'pointer' }}>Importer</div>
               </div>
               <input type="file" accept="application/json" ref={v.importRef} onChange={v.importData} style={{ display: 'none' }}/>
+
+              {/* Son de la séance : test + on/off */}
+              <div style={{ background: '#181c19', border: '1px solid #232823', borderRadius: '16px', padding: '14px 16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '18px' }}>{v.soundOn ? '🔊' : '🔇'}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '14px', fontWeight: 600 }}>Sons de la séance</div>
+                    <div style={{ fontSize: '11px', color: 'rgba(238,240,234,.45)' }}>Décompte, changement de jambe, repos, fin.</div>
+                  </div>
+                  <div onClick={v.toggleSound} style={{ fontSize: '12px', fontWeight: 700, color: v.soundOn ? '#43e08a' : 'rgba(238,240,234,.4)', background: v.soundOn ? 'rgba(67,224,138,.12)' : '#232823', borderRadius: '20px', padding: '5px 12px', cursor: 'pointer' }}>{v.soundOn ? 'Activé' : 'Coupé'}</div>
+                </div>
+                <div onClick={v.testSound} style={{ marginTop: '12px', minHeight: '46px', background: 'rgba(67,224,138,.12)', border: '1px solid rgba(67,224,138,.3)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '14px', fontWeight: 700, color: '#43e08a', cursor: 'pointer' }}>▶ Tester le son</div>
+                <div style={{ fontSize: '10px', color: 'rgba(238,240,234,.35)', textAlign: 'center', marginTop: '8px', lineHeight: 1.4 }}>Touche « Tester le son ». Sur iPhone, coupe le mode silencieux (switch sur le côté).</div>
+              </div>
+
               <div style={{ fontSize: '11px', color: 'rgba(238,240,234,.35)', textAlign: 'center', paddingBottom: '4px' }}>Tout est stocké sur ce téléphone uniquement.</div>
               <div style={{ fontSize: '10px', color: 'rgba(238,240,234,.25)', textAlign: 'center', letterSpacing: '.5px' }}>Achille v{v.appVersion} · build {v.buildDate}</div>
             </div>
