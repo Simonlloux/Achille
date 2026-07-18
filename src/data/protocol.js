@@ -26,6 +26,8 @@
 //               title  : nom de la journée (affiché dans « Séance du jour »)
 //               tendon : true = tous les exos tendon · [indices] = sous-liste
 //               renfo  : [ids] du catalogue strength.js pour ce jour
+//               stretch: [ids] étirements (famille 'etirement') — placés en FIN
+//                        de séance (muscle chaud). Réservés à la mid-portion.
 //               cardio : texte du cardio du jour (cochable, sans minuteur)
 //               rest   : true = jour de repos (note affichée)
 //             }
@@ -83,12 +85,12 @@ export const PHASES = [
       },
     ],
     schedule: {
-      1: { title: 'Tendon + Renfo bas', tendon: true, renfo: ['pont-fessier', 'abduction-hanche', 'clamshell', 'squat-gobelet', 'tibial-anterieur'] },
-      2: { title: 'Tendon + Cardio', tendon: true, renfo: ['balle-plantaire'], cardio: 'Marche rapide 30–40 min sur plat (ou vélo) — seulement si douleur ≤ 3 pendant et après' },
-      3: { title: 'Tendon + Renfo tronc/haut', tendon: true, renfo: ['planche', 'planche-laterale', 'dead-bug', 'rowing-halteres', 'pompes', 'developpe-epaules'] },
-      4: { title: 'Tendon + Cardio', tendon: true, renfo: ['proprio'], cardio: 'Marche rapide 30–40 min ou vélo' },
-      5: { title: 'Tendon + Renfo bas', tendon: true, renfo: ['pont-fessier', 'abduction-hanche', 'clamshell', 'squat-gobelet', 'tibial-anterieur'] },
-      6: { title: 'Tendon + Cardio long', tendon: true, renfo: ['balle-plantaire'], cardio: 'Marche 45–60 min terrain plat, ou vélo 45–60 min' },
+      1: { title: 'Tendon + Renfo bas', tendon: true, renfo: ['pont-fessier', 'abduction-hanche', 'clamshell', 'squat-gobelet', 'tibial-anterieur'], stretch: ['etir-serviette', 'etir-gastro-mur', 'etir-soleaire-mur'] },
+      2: { title: 'Tendon + Cardio', tendon: true, renfo: ['balle-plantaire'], stretch: ['etir-serviette', 'etir-gastro-mur', 'etir-soleaire-mur'], cardio: 'Marche rapide 30–40 min sur plat (ou vélo) — seulement si douleur ≤ 3 pendant et après' },
+      3: { title: 'Tendon + Renfo tronc/haut', tendon: true, renfo: ['planche', 'planche-laterale', 'dead-bug', 'rowing-halteres', 'pompes', 'developpe-epaules'], stretch: ['etir-serviette', 'etir-gastro-mur', 'etir-soleaire-mur'] },
+      4: { title: 'Tendon + Cardio', tendon: true, renfo: ['proprio'], stretch: ['etir-serviette', 'etir-gastro-mur', 'etir-soleaire-mur'], cardio: 'Marche rapide 30–40 min ou vélo' },
+      5: { title: 'Tendon + Renfo bas', tendon: true, renfo: ['pont-fessier', 'abduction-hanche', 'clamshell', 'squat-gobelet', 'tibial-anterieur'], stretch: ['etir-serviette', 'etir-gastro-mur', 'etir-soleaire-mur'] },
+      6: { title: 'Tendon + Cardio long', tendon: true, renfo: ['balle-plantaire'], stretch: ['etir-serviette', 'etir-gastro-mur', 'etir-soleaire-mur'], cardio: 'Marche 45–60 min terrain plat, ou vélo 45–60 min' },
       0: { title: 'Repos', rest: true, note: 'Repos complet. Les isométries restent autorisées si elles te soulagent (c\'est souvent le cas).' },
     },
   },
@@ -151,12 +153,12 @@ export const PHASES = [
       },
     ],
     schedule: {
-      1: { title: 'Tendon HSR', tendon: true, renfo: ['tibial-anterieur', 'proprio'] },
-      2: { title: 'Renfo trail complet', renfo: ['fente-bulgare', 'sdt-unijambiste', 'hip-thrust', 'step-up', 'abduction-hanche', 'pallof', 'planche-laterale', 'pompes', 'rowing-halteres', 'developpe-epaules'] },
-      3: { title: 'Tendon HSR', tendon: true, renfo: ['tibial-anterieur', 'proprio'] },
-      4: { title: 'Renfo trail complet', renfo: ['fente-bulgare', 'sdt-unijambiste', 'hip-thrust', 'step-up', 'abduction-hanche', 'pallof', 'planche-laterale', 'pompes', 'rowing-halteres', 'developpe-epaules'] },
-      5: { title: 'Tendon HSR', tendon: true, renfo: ['tibial-anterieur', 'proprio'] },
-      6: { title: 'Cardio long', renfo: ['balle-plantaire'], cardio: 'Marche rapide ou rando facile sur plat 45–90 min, ou vélo 45–60 min' },
+      1: { title: 'Tendon HSR', tendon: true, renfo: ['tibial-anterieur', 'proprio'], stretch: ['etir-gastro-mur', 'etir-soleaire-mur', 'etir-marche'] },
+      2: { title: 'Renfo trail complet', renfo: ['fente-bulgare', 'sdt-unijambiste', 'hip-thrust', 'step-up', 'abduction-hanche', 'pallof', 'planche-laterale', 'pompes', 'rowing-halteres', 'developpe-epaules'], stretch: ['etir-gastro-mur', 'etir-soleaire-mur'] },
+      3: { title: 'Tendon HSR', tendon: true, renfo: ['tibial-anterieur', 'proprio'], stretch: ['etir-gastro-mur', 'etir-soleaire-mur', 'etir-marche'] },
+      4: { title: 'Renfo trail complet', renfo: ['fente-bulgare', 'sdt-unijambiste', 'hip-thrust', 'step-up', 'abduction-hanche', 'pallof', 'planche-laterale', 'pompes', 'rowing-halteres', 'developpe-epaules'], stretch: ['etir-gastro-mur', 'etir-soleaire-mur'] },
+      5: { title: 'Tendon HSR', tendon: true, renfo: ['tibial-anterieur', 'proprio'], stretch: ['etir-gastro-mur', 'etir-soleaire-mur', 'etir-marche'] },
+      6: { title: 'Cardio long', renfo: ['balle-plantaire'], stretch: ['etir-gastro-mur', 'etir-soleaire-mur'], cardio: 'Marche rapide ou rando facile sur plat 45–90 min, ou vélo 45–60 min' },
       0: { title: 'Repos', rest: true, note: 'Repos complet.' },
     },
   },
@@ -219,12 +221,12 @@ export const PHASES = [
       },
     ],
     schedule: {
-      1: { title: 'Tendon HSR lourd', tendon: true, renfo: ['tibial-anterieur', 'proprio'] },
-      2: { title: 'Renfo trail complet', renfo: ['fente-bulgare', 'sdt-unijambiste', 'hip-thrust', 'step-up', 'abduction-hanche', 'pallof', 'planche-laterale', 'pompes', 'rowing-halteres', 'developpe-epaules'] },
-      3: { title: 'Tendon HSR lourd', tendon: true, renfo: ['tibial-anterieur', 'proprio'] },
-      4: { title: 'Renfo trail complet', renfo: ['fente-bulgare', 'sdt-unijambiste', 'hip-thrust', 'step-up', 'abduction-hanche', 'pallof', 'planche-laterale', 'pompes', 'rowing-halteres', 'developpe-epaules'] },
-      5: { title: 'Tendon HSR lourd', tendon: true, renfo: ['tibial-anterieur', 'proprio'] },
-      6: { title: 'Cardio long', renfo: ['balle-plantaire'], cardio: 'Marche rapide ou rando facile 45–90 min, ou vélo 45–60 min' },
+      1: { title: 'Tendon HSR lourd', tendon: true, renfo: ['tibial-anterieur', 'proprio'], stretch: ['etir-gastro-mur', 'etir-soleaire-mur', 'etir-marche'] },
+      2: { title: 'Renfo trail complet', renfo: ['fente-bulgare', 'sdt-unijambiste', 'hip-thrust', 'step-up', 'abduction-hanche', 'pallof', 'planche-laterale', 'pompes', 'rowing-halteres', 'developpe-epaules'], stretch: ['etir-gastro-mur', 'etir-soleaire-mur'] },
+      3: { title: 'Tendon HSR lourd', tendon: true, renfo: ['tibial-anterieur', 'proprio'], stretch: ['etir-gastro-mur', 'etir-soleaire-mur', 'etir-marche'] },
+      4: { title: 'Renfo trail complet', renfo: ['fente-bulgare', 'sdt-unijambiste', 'hip-thrust', 'step-up', 'abduction-hanche', 'pallof', 'planche-laterale', 'pompes', 'rowing-halteres', 'developpe-epaules'], stretch: ['etir-gastro-mur', 'etir-soleaire-mur'] },
+      5: { title: 'Tendon HSR lourd', tendon: true, renfo: ['tibial-anterieur', 'proprio'], stretch: ['etir-gastro-mur', 'etir-soleaire-mur', 'etir-marche'] },
+      6: { title: 'Cardio long', renfo: ['balle-plantaire'], stretch: ['etir-gastro-mur', 'etir-soleaire-mur'], cardio: 'Marche rapide ou rando facile 45–90 min, ou vélo 45–60 min' },
       0: { title: 'Repos', rest: true, note: 'Repos complet.' },
     },
   },
@@ -315,11 +317,11 @@ export const PHASES = [
       },
     ],
     schedule: {
-      1: { title: 'Tendon entretien + Renfo bas', tendon: [0, 1], renfo: ['fente-bulgare', 'sdt-unijambiste', 'hip-thrust'] },
-      2: { title: 'Pliométrie légère', tendon: [2, 3], renfo: ['planche', 'dead-bug'] },
-      3: { title: 'Cardio + mobilité', cardio: 'Marche rapide ou vélo 40–60 min + mobilité générale' },
-      4: { title: 'Pliométrie + Renfo haut', tendon: [2, 3], renfo: ['pompes', 'rowing-halteres', 'developpe-epaules', 'pallof'] },
-      5: { title: 'Tendon entretien', tendon: [0, 1], renfo: ['proprio'] },
+      1: { title: 'Tendon entretien + Renfo bas', tendon: [0, 1], renfo: ['fente-bulgare', 'sdt-unijambiste', 'hip-thrust'], stretch: ['etir-gastro-mur', 'etir-soleaire-mur', 'etir-marche'] },
+      2: { title: 'Pliométrie légère', tendon: [2, 3], renfo: ['planche', 'dead-bug'], stretch: ['etir-gastro-mur', 'etir-soleaire-mur'] },
+      3: { title: 'Cardio + mobilité', stretch: ['etir-gastro-mur', 'etir-soleaire-mur', 'etir-marche'], cardio: 'Marche rapide ou vélo 40–60 min + mobilité générale' },
+      4: { title: 'Pliométrie + Renfo haut', tendon: [2, 3], renfo: ['pompes', 'rowing-halteres', 'developpe-epaules', 'pallof'], stretch: ['etir-gastro-mur', 'etir-soleaire-mur'] },
+      5: { title: 'Tendon entretien', tendon: [0, 1], renfo: ['proprio'], stretch: ['etir-gastro-mur', 'etir-soleaire-mur', 'etir-marche'] },
       6: { title: 'Retour course', cardio: 'Sautillements unipodaux indolores ? → protocole R1→R5 (fiche dans Programme). Sinon : marche rapide 60 min.' },
       0: { title: 'Repos', rest: true, note: 'Repos complet. Vérifie la raideur matinale après chaque nouveauté de la semaine.' },
     },

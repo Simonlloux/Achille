@@ -178,6 +178,10 @@ export default class App extends React.Component {
       how: e.how,
       tempo: L.hold ? ['Maintien ' + L.hold + ' s'] : [],
       isStrength: true,
+      // Étirements : famille + réglages d'alternance D/G portés par le niveau.
+      isStretch: e.family === 'etirement',
+      sideRest: L.sideRest,
+      perSide: L.perSide,
     };
   }
 
@@ -215,8 +219,15 @@ export default class App extends React.Component {
           .filter((id) => CATALOGUE[id] && d.phase >= (CATALOGUE[id].minAchillePhase || 0))
           .map((id) => this.strengthItem(id, lvl))
       : [];
+    // Étirements : en FIN de séance (muscle chaud). Même gating par phase Achille
+    // et même niveau de progression que le renfo.
+    const stretch = d.strengthOn
+      ? (plan.stretch || [])
+          .filter((id) => CATALOGUE[id] && d.phase >= (CATALOGUE[id].minAchillePhase || 0))
+          .map((id) => this.strengthItem(id, lvl))
+      : [];
     // Marque chaque exo unilatéral pour l'alternance D/G dans la séance guidée.
-    return [...tendon, ...renfo].map((e) => ({ ...e, perSide: this.isPerSide(e) }));
+    return [...tendon, ...renfo, ...stretch].map((e) => ({ ...e, perSide: this.isPerSide(e) }));
   }
   restFor(ex) {
     return Number(this.props.restSeconds ?? ex.rest ?? 60);
@@ -438,13 +449,26 @@ export default class App extends React.Component {
         meta: ex.meta,
         isStrength: !!ex.isStrength,
         familyLabel: ex.isStrength ? FAMILY_LABELS[ex.family] || 'Renfo' : '',
+        // Pastille de catégorie : Étirement (turquoise) / Renfo (bleu) / rien (tendon).
+        badgeLabel: ex.isStretch ? 'Étirement' : ex.isStrength ? 'Renfo' : '',
+        badgeColor: ex.isStretch ? '#40d6cd' : '#8ab0ff',
+        badgeBg: ex.isStretch ? 'rgba(64,214,205,.12)' : 'rgba(120,160,255,.12)',
         iconTxt: isDone ? '✓' : String(i + 1),
+        // Étirements en teinte turquoise, renfo en bleu, tendon en neutre.
         iconBg: isDone
           ? 'rgba(67,224,138,.12)'
-          : ex.isStrength
-            ? 'rgba(120,160,255,.12)'
-            : '#232823',
-        iconColor: isDone ? '#43e08a' : ex.isStrength ? '#8ab0ff' : 'rgba(238,240,234,.5)',
+          : ex.isStretch
+            ? 'rgba(64,214,205,.12)'
+            : ex.isStrength
+              ? 'rgba(120,160,255,.12)'
+              : '#232823',
+        iconColor: isDone
+          ? '#43e08a'
+          : ex.isStretch
+            ? '#40d6cd'
+            : ex.isStrength
+              ? '#8ab0ff'
+              : 'rgba(238,240,234,.5)',
         nameColor: isDone ? 'rgba(238,240,234,.5)' : '#eef0ea',
         nameDeco: isDone ? 'line-through' : 'none',
         toggle: () => this.markDone(ex.key, !isDone),

@@ -26,6 +26,7 @@
 //  'hanche'    stabilité du bassin (moyen fessier)
 //  'equilibre' proprioception / cheville / tibial
 //  'haut'      haut du corps (bâtons, portage)
+//  'etirement' étirements mollet / chaîne postérieure (mid-portion : bénéfiques)
 //  'soins'     auto-massage / mobilité
 //
 //  ── Champs ───────────────────────────────────────────────────────────────
@@ -422,6 +423,102 @@ export const CATALOGUE = {
     videoLabel: 'Vidéos : développé épaules',
   },
 
+  // ---- ÉTIREMENTS (mollet / chaîne postérieure) ----
+  //  ⚠️ Réservés à la tendinopathie du CORPS du tendon (mid-portion), ton cas :
+  //  l'étirement du mollet y est BÉNÉFIQUE. Pour une atteinte de l'INSERTION
+  //  (douleur sur le talon), ces étirements sont à éviter (compression du tendon
+  //  contre l'os) — ne pas les ré-activer sans avis médical.
+  //  On étire APRÈS le travail, muscle chaud. Étirement doux, jamais douloureux :
+  //  tension confortable (2–3/10 max), on ne force pas, on ne rebondit pas.
+  'etir-gastro-mur': {
+    name: 'Étirement gastrocnémien au mur — genou tendu',
+    family: 'etirement',
+    minAchillePhase: 0,
+    material: 'un mur',
+    levels: [
+      { meta: '3 × 30 s / jambe', sets: 3, hold: 30, rest: 10, perSide: true, sideRest: 5 },
+      { meta: '3 × 40 s / jambe', sets: 3, hold: 40, rest: 10, perSide: true, sideRest: 5 },
+      { meta: '3 × 45 s / jambe', sets: 3, hold: 45, rest: 10, perSide: true, sideRest: 5 },
+    ],
+    setup: 'Face au mur, mains posées dessus. Jambe à étirer TENDUE loin derrière, talon bien ancré au sol, pointe droit devant. Jambe avant fléchie.',
+    cue: 'Avance le bassin vers le mur en gardant le talon arrière au sol et le genou tendu. Tu sens l\'étirement dans le HAUT du mollet. Étirement confortable, pas de douleur, pas de à-coups.',
+    what: 'Le gastrocnémien (gros mollet) s\'attache au-dessus du genou : jambe tendue, c\'est lui qu\'on étire. Pour la tendinopathie du corps du tendon, cet étirement améliore la souplesse et soulage — validé par la recherche.',
+    how: [
+      'Face au mur, mains dessus, un pied loin derrière',
+      'Talon arrière ancré au sol, genou arrière TENDU',
+      'Avance le bassin vers le mur jusqu\'à sentir le haut du mollet',
+      'Tiens sans forcer ni rebondir — change de jambe',
+    ],
+    video: 'https://www.youtube.com/watch?v=E3sRHXW1lYA',
+    videoLabel: 'Vidéo : gastrocnemius stretch',
+  },
+  'etir-soleaire-mur': {
+    name: 'Étirement soléaire au mur — genou fléchi',
+    family: 'etirement',
+    minAchillePhase: 0,
+    material: 'un mur',
+    levels: [
+      { meta: '3 × 30 s / jambe', sets: 3, hold: 30, rest: 10, perSide: true, sideRest: 5 },
+      { meta: '3 × 40 s / jambe', sets: 3, hold: 40, rest: 10, perSide: true, sideRest: 5 },
+      { meta: '3 × 45 s / jambe', sets: 3, hold: 45, rest: 10, perSide: true, sideRest: 5 },
+    ],
+    setup: 'Même position qu\'au mur, mais la jambe arrière (celle qu\'on étire) est FLÉCHIE, genou plié, talon toujours au sol.',
+    cue: 'Fléchis le genou arrière en gardant le talon au sol : l\'étirement descend plus BAS, près du tendon. Douceur, jamais de douleur.',
+    what: 'Genou fléchi = on relâche le gastrocnémien et on cible le soléaire (mollet profond), juste au-dessus du tendon. Indispensable en complément du genou tendu : les deux muscles se rejoignent sur le tendon d\'Achille.',
+    how: [
+      'Position mur, jambe arrière proche du corps',
+      'Fléchis le genou arrière, talon TOUJOURS au sol',
+      'Descends doucement jusqu\'à sentir le bas du mollet',
+      'Tiens sans forcer — change de jambe',
+    ],
+    video: 'https://www.youtube.com/watch?v=Ov4qWjIsxBw',
+    videoLabel: 'Vidéo : soleus stretch',
+  },
+  'etir-serviette': {
+    name: 'Étirement à la serviette (assis) — doux',
+    family: 'etirement',
+    minAchillePhase: 0,
+    material: 'serviette ou sangle',
+    levels: [
+      { meta: '3 × 30 s / jambe', sets: 3, hold: 30, rest: 10, perSide: true, sideRest: 5 },
+      { meta: '3 × 40 s / jambe', sets: 3, hold: 40, rest: 10, perSide: true, sideRest: 5 },
+      { meta: '3 × 45 s / jambe', sets: 3, hold: 45, rest: 10, perSide: true, sideRest: 5 },
+    ],
+    setup: 'Assis au sol, jambe à étirer tendue devant. Serviette (ou sangle) passée autour de l\'avant-pied, une extrémité dans chaque main.',
+    cue: 'Tire doucement la serviette pour ramener la pointe de pied vers toi, genou tendu. Étirement le long du mollet et du tendon. Contrôle total, aucune douleur.',
+    what: 'La version la plus douce et la plus contrôlable : c\'est TA main qui dose la tension, pas ton poids de corps. Idéale les jours sensibles ou pour commencer avant de passer au mur.',
+    how: [
+      'Assis, jambe tendue devant, serviette autour de l\'avant-pied',
+      'Genou bien tendu (dos droit)',
+      'Tire doucement la pointe vers toi, tension confortable',
+      'Tiens, relâche, change de jambe',
+    ],
+    video: 'https://www.youtube.com/watch?v=Ff_hpZBHTHo',
+    videoLabel: 'Vidéo : towel calf stretch',
+  },
+  'etir-marche': {
+    name: 'Étirement mollet sur marche — amplitude',
+    family: 'etirement',
+    minAchillePhase: 1, // amplitude plus grande (talon sous l'horizontale) → une fois la charge tolérée
+    material: 'une marche',
+    levels: [
+      { meta: '3 × 30 s / jambe', sets: 3, hold: 30, rest: 10, perSide: true, sideRest: 5 },
+      { meta: '3 × 40 s / jambe', sets: 3, hold: 40, rest: 10, perSide: true, sideRest: 5 },
+      { meta: '3 × 45 s / jambe', sets: 3, hold: 45, rest: 10, perSide: true, sideRest: 5 },
+    ],
+    setup: 'Avant-pied d\'une jambe sur le bord d\'une marche, talon dans le vide, main à la rampe. Une seule jambe étirée à la fois.',
+    cue: 'Laisse le talon descendre SOUS le niveau de la marche, lentement, sous contrôle. Étirement maximal du mollet et du tendon. Descends seulement jusqu\'à une tension confortable.',
+    what: 'L\'étirement de plus grande amplitude : le talon passe sous l\'horizontale. On l\'introduit une fois la charge bien tolérée (phase 2+), car il sollicite davantage le tendon. Garde le contrôle, ne te laisse jamais tomber d\'un coup.',
+    how: [
+      'Avant-pied sur le bord de la marche, main à la rampe',
+      'Une jambe : laisse le talon descendre lentement sous le niveau',
+      'Descends jusqu\'à une tension confortable, sans à-coup',
+      'Tiens, remonte en contrôle, change de jambe',
+    ],
+    video: 'https://www.youtube.com/watch?v=E3sRHXW1lYA',
+    videoLabel: 'Vidéo : step calf stretch',
+  },
+
   // ---- SOINS ----
   'balle-plantaire': {
     name: 'Balle sous la voûte plantaire',
@@ -455,5 +552,6 @@ export const FAMILY_LABELS = {
   hanche: 'Hanche · stabilité bassin',
   equilibre: 'Équilibre · cheville',
   haut: 'Haut du corps',
+  etirement: 'Étirements · mollet',
   soins: 'Soins · pied',
 };

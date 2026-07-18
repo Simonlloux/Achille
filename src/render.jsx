@@ -103,8 +103,8 @@ export function render(v) {
                             <div style={{ fontSize: '14px', fontWeight: 500, color: ex.nameColor, textDecoration: ex.nameDeco }}>{ex.name}</div>
                             <div style={{ fontSize: '11px', color: 'rgba(238,240,234,.4)' }}>{ex.meta}</div>
                           </div>
-                          {ex.isStrength && (
-                            <span style={{ flexShrink: 0, fontSize: '10px', fontWeight: 600, color: '#8ab0ff', background: 'rgba(120,160,255,.12)', padding: '3px 8px', borderRadius: '20px' }}>Renfo</span>
+                          {ex.badgeLabel && (
+                            <span style={{ flexShrink: 0, fontSize: '10px', fontWeight: 600, color: ex.badgeColor, background: ex.badgeBg, padding: '3px 8px', borderRadius: '20px' }}>{ex.badgeLabel}</span>
                           )}
                         </div>
                       ))}
@@ -307,7 +307,7 @@ export function render(v) {
                   <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: '#8ab0ff' }}>Renforcement trail</div>
                   <button onClick={v.toggleStrength} style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 600, color: v.strengthOn ? '#8ab0ff' : 'rgba(238,240,234,.4)', background: v.strengthOn ? 'rgba(120,160,255,.12)' : '#232823', border: 'none', borderRadius: '20px', padding: '4px 12px', cursor: 'pointer', fontFamily: 'inherit' }}>{v.strengthOn ? 'Activé' : 'Désactivé'}</button>
                 </div>
-                <div style={{ fontSize: '13px', color: 'rgba(238,240,234,.65)', lineHeight: 1.5, marginBottom: v.strengthOn ? '12px' : '0' }}>Se renforcer pour la montagne pendant que le tendon cicatrise. Réparti selon la semaine type : renfo bas / tronc-haut en phase 1, renfo trail complet 2×/sem ensuite.</div>
+                <div style={{ fontSize: '13px', color: 'rgba(238,240,234,.65)', lineHeight: 1.5, marginBottom: v.strengthOn ? '12px' : '0' }}>Se renforcer pour la montagne pendant que le tendon cicatrise, plus les <span style={{ color: '#40d6cd', fontWeight: 600 }}>étirements du mollet</span> (fin de séance, muscle chaud). Réparti selon la semaine type : renfo bas / tronc-haut en phase 1, renfo trail complet 2×/sem ensuite.</div>
 
                 {v.strengthOn && (
                   <>
